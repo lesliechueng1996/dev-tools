@@ -6,4 +6,5 @@ type MenuItem = {
   isActive?: boolean;
   icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
   children?: MenuItem[];
+  link?: string;
 };

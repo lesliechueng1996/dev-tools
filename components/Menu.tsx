@@ -37,6 +37,8 @@ import ColorBlindnessSimulatorSvg from './icons/ColorBlindnessSimulatorSvg';
 import ColorPickerSvg from './icons/ColorPickerSvg';
 import PngJpgCompressorSvg from './icons/PngJpgCompressorSvg';
 import ImageConverterSvg from './icons/ImageConverterSvg';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 function Menu() {
   const [menus, setMenus] = useState<MenuItem[]>([
@@ -51,24 +53,28 @@ function Menu() {
           label: 'JSON < > YAML',
           isLeaf: true,
           icon: JsonYamlSvg,
+          link: '/converters/json-yaml',
         },
         {
           id: '1-1',
           label: 'Timestamp',
           isLeaf: true,
           icon: TimestampSvg,
+          link: '/converters/timestamp',
         },
         {
           id: '1-3',
           label: 'Number Base',
           isLeaf: true,
           icon: NumberBaseConverterSvg,
+          link: '/converters/number-base',
         },
         {
           id: '1-4',
           label: 'Cron Parse',
           isLeaf: true,
           icon: CronParserSvg,
+          link: '/converters/cron-parse',
         },
       ],
     },
@@ -83,36 +89,42 @@ function Menu() {
           label: 'HTML',
           isLeaf: true,
           icon: HtmlEncoderDecoderSvg,
+          link: '/encoders-decoders/html',
         },
         {
           id: '2-1',
           label: 'URL',
           isLeaf: true,
           icon: UrlEncoderDecoderSvg,
+          link: '/encoders-decoders/url',
         },
         {
           id: '2-3',
           label: 'Base64 Text',
           isLeaf: true,
           icon: Base64EncoderDecoderSvg,
+          link: '/encoders-decoders/base64-text',
         },
         {
           id: '2-4',
           label: 'Base64 Image',
           isLeaf: true,
           icon: Base64ImageEncoderDecoderSvg,
+          link: '/encoders-decoders/base64-image',
         },
         {
           id: '2-5',
           label: 'GZip',
           isLeaf: true,
           icon: GZipEncoderDecoderSvg,
+          link: '/encoders-decoders/gzip',
         },
         {
           id: '2-6',
           label: 'JWT Decoder',
           isLeaf: true,
           icon: JwtDecoderSvg,
+          link: '/encoders-decoders/jwt-decoder',
         },
       ],
     },
@@ -127,18 +139,21 @@ function Menu() {
           label: 'JSON',
           isLeaf: true,
           icon: JsonFormatterSvg,
+          link: '/formatters/json',
         },
         {
           id: '3-1',
           label: 'SQL',
           isLeaf: true,
           icon: SqlFormatterSvg,
+          link: '/formatters/sql',
         },
         {
           id: '3-2',
           label: 'XML',
           isLeaf: true,
           icon: XmlFormatterSvg,
+          link: '/formatters/xml',
         },
       ],
     },
@@ -153,24 +168,28 @@ function Menu() {
           label: 'Hash',
           isLeaf: true,
           icon: HashGereratorSvg,
+          link: '/generators/hash',
         },
         {
           id: '4-1',
           label: 'UUID',
           isLeaf: true,
           icon: UuidGeneratorSvg,
+          link: '/generators/uuid',
         },
         {
           id: '4-2',
           label: 'Lorem Ipsum',
           isLeaf: true,
           icon: LoremIpsumGeneratorSvg,
+          link: '/generators/lorem-ipsum',
         },
         {
           id: '4-3',
           label: 'Checksum',
           isLeaf: true,
           icon: ChecksumGeneratorSvg,
+          link: '/generators/check-sum',
         },
       ],
     },
@@ -185,36 +204,42 @@ function Menu() {
           label: 'Escape / Unescape',
           isLeaf: true,
           icon: StringEscapeUnescapeSvg,
+          link: '/text/escape-unescape',
         },
         {
           id: '5-1',
           label: 'Inspector & Case Converter',
           isLeaf: true,
           icon: StringUtilitiesSvg,
+          link: '/text/inspector-case-converter',
         },
         {
           id: '5-2',
           label: 'Regex Tester',
           isLeaf: true,
           icon: RegexTesterSvg,
+          link: '/text/regex-tester',
         },
         {
           id: '5-3',
           label: 'Text Diff',
           isLeaf: true,
           icon: TextDiffSvg,
+          link: '/text/text-diff',
         },
         {
           id: '5-4',
           label: 'XML Validator',
           isLeaf: true,
           icon: XMLValidatorSvg,
+          link: '/text/xml-validator',
         },
         {
           id: '5-5',
           label: 'Markdown Preview',
           isLeaf: true,
           icon: MarkdownPreviewSvg,
+          link: '/text/markdown-preview',
         },
       ],
     },
@@ -229,28 +254,34 @@ function Menu() {
           label: 'Color Blindness Simulator',
           isLeaf: true,
           icon: ColorBlindnessSimulatorSvg,
+          link: '/graphic/color-blindness-simulator',
         },
         {
           id: '6-1',
           label: 'Color Picker & Contrast',
           isLeaf: true,
           icon: ColorPickerSvg,
+          link: '/graphic/color-picker',
         },
         {
           id: '6-2',
           label: 'PNG / JPEG Compressor',
           isLeaf: true,
           icon: PngJpgCompressorSvg,
+          link: '/graphic/png-jpeg-compressor',
         },
         {
           id: '6-3',
           label: 'Image Converter',
           isLeaf: true,
           icon: ImageConverterSvg,
+          link: '/graphic/image-converter',
         },
       ],
     },
   ]);
+
+  const pathname = usePathname();
 
   const clickMenu = (id: string) => {
     let index = menus.findIndex((menu) => menu.id === id);
@@ -283,13 +314,15 @@ function Menu() {
           </div>
         </div>
 
-        <MenuRow
-          id="id"
-          icon={AllToolsSvg}
-          label="All tools"
-          isLeaf={true}
-          isActive
-        />
+        <Link href="/">
+          <MenuRow
+            id="id"
+            icon={AllToolsSvg}
+            label="All tools"
+            isLeaf={true}
+            isActive={pathname === '/'}
+          />
+        </Link>
       </div>
 
       <div className="border-t-2 dark:border-t-white/20 px-2 pt-2">
@@ -309,14 +342,16 @@ function Menu() {
               } overflow-hidden transition-all duration-500 ease-in-out `}
             >
               {item.children?.map((subItem) => (
-                <MenuRow
-                  key={subItem.id}
-                  id={subItem.id}
-                  icon={subItem.icon}
-                  label={subItem.label}
-                  isLeaf
-                  expand={false}
-                />
+                <Link href={subItem.link ?? '/'} key={subItem.id}>
+                  <MenuRow
+                    id={subItem.id}
+                    icon={subItem.icon}
+                    label={subItem.label}
+                    isLeaf
+                    expand={false}
+                    isActive={pathname === subItem.link}
+                  />
+                </Link>
               ))}
             </div>
           </div>
