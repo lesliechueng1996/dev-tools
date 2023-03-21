@@ -38,6 +38,7 @@ const menuData: MenuItem[] = [
     label: 'Converters',
     isLeaf: false,
     icon: ConvertersSvg,
+    link: '/converters',
     children: [
       {
         id: '1-0',
@@ -82,6 +83,7 @@ const menuData: MenuItem[] = [
     label: 'Encoders / Decoders',
     isLeaf: false,
     icon: EncodersDecodersSvg,
+    link: '/encoders-decoders',
     children: [
       {
         id: '2-0',
@@ -148,6 +150,7 @@ const menuData: MenuItem[] = [
     label: 'Formatters',
     isLeaf: false,
     icon: FormattersSvg,
+    link: '/formatters',
     children: [
       {
         id: '3-0',
@@ -183,6 +186,7 @@ const menuData: MenuItem[] = [
     label: 'Generators',
     isLeaf: false,
     icon: GeneratorsSvg,
+    link: '/generators',
     children: [
       {
         id: '4-0',
@@ -228,6 +232,7 @@ const menuData: MenuItem[] = [
     label: 'Text',
     isLeaf: false,
     icon: TextToolsSvg,
+    link: '/text',
     children: [
       {
         id: '5-0',
@@ -292,6 +297,7 @@ const menuData: MenuItem[] = [
     label: 'Graphic',
     isLeaf: false,
     icon: GraphicToolsSvg,
+    link: '/graphic',
     children: [
       {
         id: '6-0',
@@ -341,3 +347,7 @@ export const toolList = menuData
     [] as MenuItem[]
   )
   .sort((a, b) => a.name!.localeCompare(b.name!));
+
+export const filterData = (label: string) => {
+  return menuData.find((parent) => parent.label === label)?.children ?? [];
+};

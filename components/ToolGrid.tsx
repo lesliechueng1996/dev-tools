@@ -11,7 +11,7 @@ function ToolGrid({ title, tools }: Props) {
       <h1 className="text-3xl mb-5">{title}</h1>
       <div className="flex flex-wrap gap-7 justify-around">
         {tools.map((tool) => (
-          <ToolItem tool={tool} />
+          <ToolItem key={tool.id} tool={tool} />
         ))}
       </div>
     </div>

@@ -9,16 +9,18 @@ import MenuRow from './MenuRow';
 import AllToolsSvg from '@/components/icons/AllToolsSvg';
 import menuData from '@/data';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 function Menu() {
   const [menus, setMenus] = useState<MenuItem[]>([...menuData]);
 
   const pathname = usePathname();
+  const router = useRouter();
 
   const clickMenu = (id: string) => {
     let index = menus.findIndex((menu) => menu.id === id);
     let copy = [];
+    const menu = menus[index];
 
     for (let i = 0; i < menus.length; i++) {
       if (i === index) {
@@ -31,6 +33,7 @@ function Menu() {
       }
     }
     setMenus(copy);
+    router.push(menu.link ?? '/');
   };
 
   return (
