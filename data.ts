@@ -58,7 +58,7 @@ const menuData: MenuItem[] = [
         description: 'Convert timestamp to human-readable date and vice versa',
       },
       {
-        id: '1-3',
+        id: '1-2',
         label: 'Number Base',
         isLeaf: true,
         icon: NumberBaseConverterSvg,
@@ -67,7 +67,7 @@ const menuData: MenuItem[] = [
         description: 'Convert numbers from one base to another',
       },
       {
-        id: '1-4',
+        id: '1-3',
         label: 'Cron Parse',
         isLeaf: true,
         icon: CronParserSvg,
@@ -106,7 +106,7 @@ const menuData: MenuItem[] = [
           'Encode or decode all the applicable characters to their corresponding UR...',
       },
       {
-        id: '2-3',
+        id: '2-2',
         label: 'Base64 Text',
         isLeaf: true,
         icon: Base64EncoderDecoderSvg,
@@ -115,7 +115,7 @@ const menuData: MenuItem[] = [
         description: 'Encode or decode Base64 text data',
       },
       {
-        id: '2-4',
+        id: '2-3',
         label: 'Base64 Image',
         isLeaf: true,
         icon: Base64ImageEncoderDecoderSvg,
@@ -124,7 +124,7 @@ const menuData: MenuItem[] = [
         description: 'Encode or decode Base64 image data',
       },
       {
-        id: '2-5',
+        id: '2-4',
         label: 'GZip',
         isLeaf: true,
         icon: GZipEncoderDecoderSvg,
@@ -133,7 +133,7 @@ const menuData: MenuItem[] = [
         description: 'Compress or decompress strings',
       },
       {
-        id: '2-6',
+        id: '2-5',
         label: 'JWT',
         isLeaf: true,
         icon: JwtDecoderSvg,
@@ -334,3 +334,10 @@ const menuData: MenuItem[] = [
 ];
 
 export default menuData;
+
+export const toolList = menuData
+  .reduce(
+    (preVal, currentVal) => [...preVal, ...(currentVal.children ?? [])],
+    [] as MenuItem[]
+  )
+  .sort((a, b) => a.name!.localeCompare(b.name!));
