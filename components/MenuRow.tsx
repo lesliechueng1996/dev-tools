@@ -19,15 +19,15 @@ function MenuRow({
   return (
     <div
       className={`py-3 dark:text-white/80 ${
-        isActive && 'dark:bg-slate-800'
-      } rounded-sm flex cursor-pointer`}
+        isActive && 'bg-gray-300/50 dark:bg-slate-800'
+      } rounded-md flex cursor-pointer`}
       onClick={() => {
         onClick && onClick(id);
       }}
     >
       <div
         className={`${
-          isActive ? 'bg-cyan-400' : 'bg-transparent'
+          isActive ? 'bg-sky-600 dark:bg-cyan-400' : 'bg-transparent'
         } w-1.5 rounded-lg`}
       ></div>
       <div className="flex flex-1 px-5 items-center justify-between">

@@ -34,7 +34,7 @@ function Menu() {
     <>
       <div className="px-2 mb-3">
         <div className="w-full pt-5 px-5 mb-5">
-          <div className="dark:bg-slate-800 flex items-center rounded-sm px-3 py-1 border-b-white/70 border-b-2">
+          <div className="bg-white dark:bg-slate-800 flex items-center rounded-md px-3 py-1 border-b-sky-600 dark:border-b-white/70 border-b-2">
             <input
               type="text"
               className="outline-none w-full dark:placeholder:text-white/70 dark:text-white/70 dark:bg-slate-800 "
@@ -55,7 +55,7 @@ function Menu() {
         </Link>
       </div>
 
-      <div className="border-t-2 dark:border-t-white/20 px-2 pt-2">
+      <div className="border-t-2 border-t-gray-300/50 dark:border-t-white/20 px-2 pt-2">
         {menus.map((item) => (
           <div key={item.id}>
             <MenuRow
