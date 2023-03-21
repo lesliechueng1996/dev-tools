@@ -19,6 +19,9 @@ function ToolItem({ tool }: { tool: MenuItem }) {
         <Square2StackIcon
           className="h-6 w-6 cursor-pointer"
           title="Open in a new window"
+          onClick={() => {
+            window.open(tool.link);
+          }}
         />
         <BookmarkIcon
           className="h-6 w-6 cursor-pointer"
