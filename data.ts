@@ -351,3 +351,7 @@ export const toolList = menuData
 export const filterData = (label: string) => {
   return menuData.find((parent) => parent.label === label)?.children ?? [];
 };
+
+export const filterDataByIds = (ids: string[]) => {
+  return toolList.filter((item) => ids.includes(item.id));
+};

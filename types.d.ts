@@ -10,3 +10,9 @@ type MenuItem = {
   name?: string;
   description?: string;
 };
+
+type SuggestionItem = {
+  id: string;
+  text: string;
+  link: string;
+};

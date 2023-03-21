@@ -1,21 +1,41 @@
 'use client';
 
-import React, { useState } from 'react';
-import {
-  MagnifyingGlassIcon,
-  Cog6ToothIcon,
-} from '@heroicons/react/24/outline';
+import React, { useCallback, useState } from 'react';
+import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import MenuRow from './MenuRow';
 import AllToolsSvg from '@/components/icons/AllToolsSvg';
 import menuData from '@/data';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import Suggestion from './Suggestion';
 
 function Menu() {
   const [menus, setMenus] = useState<MenuItem[]>([...menuData]);
 
   const pathname = usePathname();
   const router = useRouter();
+
+  const searchSuggestion = useCallback((data: MenuItem[], keyword: string) => {
+    let suggestions: SuggestionItem[] = [];
+    let lowerKeyword = keyword.toLowerCase();
+    for (let i = 0; i < data.length; i++) {
+      suggestions = suggestions.concat(
+        data[i].children
+          ?.filter((item) => {
+            return (
+              item.name?.toLowerCase().includes(lowerKeyword) ||
+              item.label.toLowerCase().includes(lowerKeyword)
+            );
+          })
+          ?.map((item) => ({
+            id: item.id,
+            text: item.name ?? '',
+            link: item.link ?? '/',
+          })) ?? []
+      );
+    }
+    return suggestions;
+  }, []);
 
   const clickMenu = (id: string) => {
     let index = menus.findIndex((menu) => menu.id === id);
@@ -41,14 +61,19 @@ function Menu() {
       <div>
         <div className="px-2 mb-3">
           <div className="w-full pt-5 px-5 mb-5">
-            <div className="bg-white dark:bg-slate-800 flex items-center rounded-md px-3 py-1 border-b-sky-600 dark:border-b-white/70 border-b-2">
-              <input
-                type="text"
-                className="outline-none w-full dark:placeholder:text-white/70 dark:text-white/70 dark:bg-slate-800 "
-                placeholder="Type to search for tools..."
-              />
-              <MagnifyingGlassIcon className="h-4 w-4 dark:text-white/70 rotate-90" />
-            </div>
+            <Suggestion
+              data={menuData}
+              searchFun={searchSuggestion}
+              onChoose={(suggestion: SuggestionItem) => {
+                router.push(suggestion.link);
+              }}
+              onSeeAll={(suggestions: SuggestionItem[]) => {
+                const params = suggestions
+                  .map((suggestion) => `id=${suggestion.id}`)
+                  .join('&');
+                router.push(`/search?${params}`);
+              }}
+            />
           </div>
 
           <Link href="/">
@@ -96,14 +121,16 @@ function Menu() {
         </div>
       </div>
 
-      <div className="pl-1.5 pb-5 cursor-pointer">
-        <div className="flex items-center pl-8 gap-5 text-lg">
-          <div>
-            <Cog6ToothIcon className="h-7 w-7" />
+      <Link href="/settings">
+        <div className="pl-1.5 pb-5 cursor-pointer">
+          <div className="flex items-center pl-8 gap-5 text-lg">
+            <div>
+              <Cog6ToothIcon className="h-7 w-7" />
+            </div>
+            <div>Settings</div>
           </div>
-          <div>Settings</div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 }
