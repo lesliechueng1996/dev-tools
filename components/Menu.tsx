@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import {
+  MagnifyingGlassIcon,
+  Cog6ToothIcon,
+} from '@heroicons/react/24/outline';
 import MenuRow from './MenuRow';
 import AllToolsSvg from '@/components/icons/AllToolsSvg';
 import menuData from '@/data';
@@ -86,6 +89,15 @@ function Menu() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="pl-1.5 fixed bottom-3 cursor-pointer">
+        <div className="flex items-center pl-8 gap-5 text-lg">
+          <div>
+            <Cog6ToothIcon className="h-7 w-7" />
+          </div>
+          <div>Settings</div>
+        </div>
       </div>
     </>
   );
