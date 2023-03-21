@@ -97,6 +97,7 @@ function Menu() {
                 isLeaf={false}
                 expand={item.expand}
                 onClick={clickMenu}
+                isActive={pathname === item.link}
               />
               <div
                 className={`pl-12 ${
