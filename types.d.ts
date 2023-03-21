@@ -7,4 +7,6 @@ type MenuItem = {
   icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
   children?: MenuItem[];
   link?: string;
+  name?: string;
+  description?: string;
 };
