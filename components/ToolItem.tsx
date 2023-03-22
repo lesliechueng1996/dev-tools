@@ -1,13 +1,23 @@
+'use client';
+
 import React from 'react';
 import {
   Square2StackIcon,
   BookmarkIcon,
   BookmarkSlashIcon,
 } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
 
 function ToolItem({ tool }: { tool: MenuItem }) {
+  const router = useRouter();
+
   return (
-    <div className="group flex flex-col items-center rounded-md bg-white w-48 h-80 overflow-hidden shadow-md border hover:scale-110 transition-all duration-300 cursor-pointer">
+    <div
+      className="group flex flex-col items-center rounded-md bg-white w-48 h-80 overflow-hidden shadow-md border hover:scale-110 transition-all duration-300 cursor-pointer"
+      onClick={() => {
+        router.push(tool.link ?? '/');
+      }}
+    >
       <div className="mt-10 mb-10">
         <div>{React.createElement(tool.icon, { className: 'h-20 w-20' })}</div>
       </div>

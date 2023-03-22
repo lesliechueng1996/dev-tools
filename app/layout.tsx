@@ -17,7 +17,7 @@ export default function RootLayout({
         <aside className="w-1/4 bg-slate-200 dark:bg-slate-900 h-screen min-w-min overflow-y-auto">
           <Menu />
         </aside>
-        <main className="flex-1 bg-slate-50 h-screen overflow-y-auto p-10">
+        <main className="flex-1 bg-slate-50 h-screen overflow-y-auto px-10 py-5">
           {children}
         </main>
       </body>

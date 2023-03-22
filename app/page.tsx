@@ -1,3 +1,5 @@
+'use client';
+
 import ToolGrid from '@/components/ToolGrid';
 import { toolList } from '@/data';
 
