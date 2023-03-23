@@ -1,17 +1,22 @@
 'use client';
 
+import DragDropFile from '@/components/DragDropFile';
 import SplitterView from '@/components/SplitterView';
 import {
   ClipboardDocumentCheckIcon,
   DocumentDuplicateIcon,
   DocumentIcon,
   XMarkIcon,
+  EyeIcon,
+  ServerIcon,
 } from '@heroicons/react/24/outline';
 import { useRef, useState } from 'react';
+import NextImage from 'next/image';
 
 function Base64ImagePage() {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [inputText, setInputText] = useState('');
+  const [imageSrc, setImageSrc] = useState('');
 
   const clearInput = () => {
     setInputText('');
@@ -56,7 +61,7 @@ function Base64ImagePage() {
   };
 
   const Base64Panel = (
-    <div>
+    <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-3">
         <h2>Base64</h2>
         <div className="flex gap-3">
@@ -99,32 +104,79 @@ function Base64ImagePage() {
           </button>
         </div>
       </div>
-      <div>
-        <textarea
-          className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-        ></textarea>
-      </div>
+      <textarea
+        className="w-full flex-1 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)}
+      ></textarea>
     </div>
   );
 
   const ImagePanel = (
-    <div>
-      <h2>Image</h2>
-      <div>// react-dropzone</div>
+    <div className="h-full flex flex-col">
+      <h2 className="mb-3 h-10 leading-10">Image</h2>
+      <div className="mb-3">
+        <DragDropFile
+          onImageLoad={(data: string) => {
+            setImageSrc(data);
+            setInputText(data);
+          }}
+        />
+      </div>
+      <div className="bg-white flex-1 rounded-md border shadow p-5">
+        {imageSrc && (
+          <div>
+            <div className="flex gap-3 justify-end mb-3">
+              <button
+                className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+                onClick={() => {
+                  const img = new Image();
+                  img.src = imageSrc;
+
+                  const newWin = window.open('', '_blank');
+                  newWin!.document.write(img.outerHTML);
+                  newWin!.document.title = 'Preview';
+                  newWin!.document.close();
+                }}
+              >
+                <EyeIcon className="w-6 h-6" />
+                View
+              </button>
+              <button
+                className="bg-white rounded-md px-3 py-2 shadow"
+                title="Copy"
+              >
+                <DocumentDuplicateIcon className="w-6 h-6" />
+              </button>
+              <button
+                className="bg-white rounded-md px-3 py-2 shadow"
+                title="Save as"
+              >
+                <ServerIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <NextImage
+              src={imageSrc}
+              alt="preview"
+              width={700}
+              height={475}
+              className="w-full h-auto"
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 
   return (
-    <div>
+    <div className="h-full flex flex-col">
       <h1 className="text-3xl mb-5">Base64 Image Encoder / Decoder</h1>
-      <div>
+      <div className="flex-1">
         <SplitterView
           leftChild={Base64Panel}
-          rightChild={<div>456</div>}
-          leftMin={100}
-          rightMin={100}
+          rightChild={ImagePanel}
+          leftMin={500}
+          rightMin={500}
         />
       </div>
     </div>

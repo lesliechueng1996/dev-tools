@@ -1,3 +1,4 @@
+import ClientProvider from '@/components/ClientProvider';
 import './globals.css';
 import Menu from '@/components/Menu';
 
@@ -20,6 +21,7 @@ export default function RootLayout({
         <main className="flex-1 bg-slate-50 h-screen overflow-y-auto px-10 py-5">
           {children}
         </main>
+        <ClientProvider />
       </body>
     </html>
   );
