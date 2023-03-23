@@ -20,18 +20,28 @@ function Base64TextPage() {
   const [isEncode, setIsEncode] = useState(true);
   const [encoding, setEncoding] = useState(encodingList[0]);
   const [inputText, setInputText] = useState('');
+  const inputValue = useRef('');
   const outputRef = useRef<HTMLTextAreaElement>(null);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const realInputText = useDebounce(inputText, 500);
 
   useEffect(() => {
-    if (isEncode) {
-      const str = Base64.stringify(Utf8.parse(realInputText));
-      outputRef.current && (outputRef.current.value = str);
-    } else {
-      const str = Utf8.stringify(Base64.parse(realInputText));
-      outputRef.current && (outputRef.current.value = str);
+    inputValue.current = realInputText;
+  }, [realInputText]);
+
+  useEffect(() => {
+    try {
+      if (isEncode) {
+        const str = Base64.stringify(Utf8.parse(inputValue.current));
+        outputRef.current && (outputRef.current.value = str);
+      } else {
+        const str = Utf8.stringify(Base64.parse(inputValue.current));
+        outputRef.current && (outputRef.current.value = str);
+      }
+    } catch (e) {
+      console.log(e);
+      outputRef.current!.value = '??';
     }
   }, [realInputText, isEncode]);
 
@@ -98,7 +108,11 @@ function Base64TextPage() {
             <div>
               <Switch
                 checked={isEncode}
-                onChange={(checked) => setIsEncode(checked)}
+                onChange={(checked) => {
+                  inputValue.current = outputRef.current!.value;
+                  setInputText(inputValue.current);
+                  setIsEncode(checked);
+                }}
                 checkedIcon={false}
                 uncheckedIcon={false}
                 onColor="#0369A1"
