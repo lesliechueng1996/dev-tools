@@ -100,22 +100,23 @@ function Menu() {
                 isActive={pathname === item.link}
               />
               <div
-                className={`pl-12 ${
-                  item.expand ? 'max-h-screen' : 'max-h-0'
-                } overflow-hidden transition-all duration-500 ease-in-out `}
+                className={`pl-12 grid transition-all duration-500 ease-in-out`}
+                style={{ gridTemplateRows: `${item.expand ? '1fr' : '0fr'}` }}
               >
-                {item.children?.map((subItem) => (
-                  <Link href={subItem.link ?? '/'} key={subItem.id}>
-                    <MenuRow
-                      id={subItem.id}
-                      icon={subItem.icon}
-                      label={subItem.label}
-                      isLeaf
-                      expand={false}
-                      isActive={pathname === subItem.link}
-                    />
-                  </Link>
-                ))}
+                <div className="min-h-0 overflow-hidden">
+                  {item.children?.map((subItem) => (
+                    <Link href={subItem.link ?? '/'} key={subItem.id}>
+                      <MenuRow
+                        id={subItem.id}
+                        icon={subItem.icon}
+                        label={subItem.label}
+                        isLeaf
+                        expand={false}
+                        isActive={pathname === subItem.link}
+                      />
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
