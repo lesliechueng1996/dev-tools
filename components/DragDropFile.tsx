@@ -3,21 +3,18 @@ import toast from 'react-hot-toast';
 import path from 'path';
 
 type Props = {
-  onImageLoad: (dataBase64: string) => void;
+  acceptAll?: boolean;
+  acceptFiles?: string[];
+  onFileLoad: (file: File) => void;
+  className?: string;
 };
 
-const acceptFiles = [
-  '.png',
-  '.jpg',
-  '.jpeg',
-  '.bmp',
-  '.gif',
-  '.ico',
-  '.webp',
-  '.svg',
-];
-
-function DragDropFile({ onImageLoad }: Props) {
+function DragDropFile({
+  className = '',
+  acceptAll = false,
+  acceptFiles = [],
+  onFileLoad,
+}: Props) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [onDrag, setOnDrag] = useState(false);
 
@@ -44,30 +41,18 @@ function DragDropFile({ onImageLoad }: Props) {
 
     const file = e.dataTransfer.files[0];
     const extName = path.extname(file.name);
-    if (!acceptFiles.includes(extName)) {
+    if (!acceptAll && !acceptFiles.includes(extName)) {
       toast.error(`Only can upload ${acceptFiles.join(', ')} file`);
       return;
     }
 
-    const fileReader = new FileReader();
-    fileReader.onload = (e: ProgressEvent<FileReader>) => {
-      const dataUrl = e.target?.result as string;
-      onImageLoad(dataUrl ?? '');
-    };
-
-    fileReader.readAsDataURL(file);
+    onFileLoad(file);
   };
 
   const onChangeFile = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      const fileReader = new FileReader();
-      fileReader.onload = (e: ProgressEvent<FileReader>) => {
-        const dataUrl = e.target?.result as string;
-        onImageLoad(dataUrl ?? '');
-      };
-
-      fileReader.readAsDataURL(file);
+      onFileLoad(file);
     }
   };
 
@@ -75,7 +60,7 @@ function DragDropFile({ onImageLoad }: Props) {
     <div
       className={`w-full border-dashed border-2 rounded-md border-gray-400 px-10 py-8 flex flex-col items-center gap-3 transition-all duration-300 ${
         onDrag && 'scale-105'
-      }`}
+      } ${className}`}
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={() => setOnDrag(false)}
@@ -85,11 +70,17 @@ function DragDropFile({ onImageLoad }: Props) {
         type="file"
         className="hidden"
         ref={fileInput}
-        accept={acceptFiles.join(', ')}
+        accept={acceptAll ? '*' : acceptFiles.join(', ')}
         onChange={onChangeFile}
       />
       <div className="text-center">
-        Drag & drop a PNG, JPG, JPEG, BMP, GIF, ICO, WEBP, SVG file here
+        Drag & drop a{' '}
+        {acceptAll
+          ? 'any'
+          : acceptFiles
+              .map((item) => item.substring(1).toUpperCase())
+              .join(', ')}{' '}
+        file here
       </div>
       <div>or</div>
       <div className="space-x-5">

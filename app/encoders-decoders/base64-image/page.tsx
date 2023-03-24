@@ -14,6 +14,17 @@ import { useEffect, useRef, useState } from 'react';
 import NextImage from 'next/image';
 import useDebounce from '@/hooks/useDebounce';
 
+const acceptFiles = [
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.bmp',
+  '.gif',
+  '.ico',
+  '.webp',
+  '.svg',
+];
+
 function Base64ImagePage() {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [inputText, setInputText] = useState('');
@@ -157,9 +168,17 @@ function Base64ImagePage() {
       <h2 className="mb-3 h-10 leading-10">Image</h2>
       <div className="mb-3">
         <DragDropFile
-          onImageLoad={(data: string) => {
-            setImageSrc(data);
-            setInputText(data);
+          acceptFiles={acceptFiles}
+          onFileLoad={(file) => {
+            const fileReader = new FileReader();
+            fileReader.onload = (e: ProgressEvent<FileReader>) => {
+              const data = e.target?.result;
+              const base64Data = (data ?? '') as string;
+              setImageSrc(base64Data);
+              setInputText(base64Data);
+            };
+
+            fileReader.readAsDataURL(file);
           }}
         />
       </div>

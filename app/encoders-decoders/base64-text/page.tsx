@@ -93,7 +93,7 @@ function Base64TextPage() {
       <h1 className="text-3xl mb-5">Base64 Text Encoder / Decoder</h1>
       <div>
         <div>
-          <h2 className="text-xl mb-2">Configuration</h2>
+          <h2>Configuration</h2>
           <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 mb-5 h-20">
             <div>
               <ArrowsRightLeftIcon className="w-6 h-6" />
