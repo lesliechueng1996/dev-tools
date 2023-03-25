@@ -15,7 +15,7 @@ export default class HsvColor {
     this.hue = Math.floor(hue);
     this.saturation = Math.floor(saturation);
     this.value = Math.floor(value);
-    this.opacity = Math.floor(opacity);
+    this.opacity = Math.round(opacity);
   }
 
   static copy(color: HsvColor) {
@@ -25,6 +25,62 @@ export default class HsvColor {
       value: color.value,
       opacity: color.opacity,
     });
+  }
+
+  static fromHex(argb: string) {
+    let temp = argb.replace('#', '');
+    const redStr = temp.substring(2, 4);
+    const redValue = parseInt(redStr, 16);
+    const greenStr = temp.substring(4, 6);
+    const greenValue = parseInt(greenStr, 16);
+    const blueStr = temp.substring(6, 8);
+    const blueValue = parseInt(blueStr, 16);
+    const alphaStr = temp.substring(0, 2);
+    const alphaValue = parseInt(alphaStr, 16);
+    const rgba = {
+      r: redValue,
+      g: greenValue,
+      b: blueValue,
+      a: alphaValue,
+    };
+    return this.fromRGBA(rgba);
+  }
+
+  static fromRGBA({
+    r,
+    g,
+    b,
+    a,
+  }: {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+  }) {
+    const tempR = r;
+    const tempB = b;
+    const tempG = g;
+    const max = Math.max(tempR, tempG, tempB);
+    const min = Math.min(tempR, tempG, tempB);
+    const d = max - min;
+    let h, s, v;
+    if (d === 0) {
+      h = 0;
+    } else if (max === tempR) {
+      h = (tempG - tempB) / d + (tempG < tempB ? 6 : 0);
+    } else if (max === tempG) {
+      h = (tempB - tempR) / d + 2;
+    } else {
+      h = (tempR - tempG) / d + 4;
+    }
+    h = Math.round(h * 60);
+    if (h < 0) {
+      h += 360;
+    }
+    v = Math.round((max / 255) * 100);
+    s = Math.round((max === 0 ? 0 : d / max) * 100);
+
+    return new HsvColor({ hue: h, saturation: s, value: v, opacity: a });
   }
 
   toRGBA(opacity?: number) {
@@ -72,6 +128,11 @@ export default class HsvColor {
       b,
       a: opacity !== null && opacity !== undefined ? opacity : this.opacity,
     };
+  }
+
+  toRGBAStr() {
+    const rgba = this.toRGBA();
+    return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
   }
 
   toRGBAWithOpacity(opacity: number) {

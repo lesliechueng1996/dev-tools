@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import styles from './ColorBar.module.css';
-import Color from './Color';
 
 type Props = {
-  // color: Color;
   width: number;
   startColor: string;
   endColor: string;
-  initLeftPercent: () => number;
+  percent: number;
   opacityFlag?: boolean;
   onPercentChange: (percent: number) => void;
 };
@@ -15,12 +13,11 @@ type Props = {
 const halfCircleWidth = 7.5;
 
 function ColorBar({
-  // color,
   width,
   startColor,
   endColor,
   opacityFlag = false,
-  initLeftPercent,
+  percent,
   onPercentChange,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -38,12 +35,19 @@ function ColorBar({
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const left = initLeftPercent();
+      const left = percent;
       moveCircleRef.current!.style.left = `${
         (left / 100) * width - halfCircleWidth
       }px`;
     }
   }, [startColor, endColor]);
+
+  useEffect(() => {
+    const left = percent;
+    moveCircleRef.current!.style.left = `${
+      (left / 100) * width - halfCircleWidth
+    }px`;
+  }, [percent]);
 
   const getColor = (left: number) => {
     let percentage = Math.floor((left / (width - 2 * halfCircleWidth)) * 100);

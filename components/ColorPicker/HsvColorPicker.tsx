@@ -2,30 +2,53 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './style.module.css';
-import ColorBar from './ColorBar';
+import ColorBar from './HsvColorBar';
 import HsvColor from './HsvColor';
 
 type Props = {
   width: number;
   defaultColor: HsvColor;
+  onColorChange: (rgba: string) => void;
+};
+
+type Inputs = {
+  hex: string;
+  red: number;
+  green: number;
+  blue: number;
+  hue: number;
+  saturation: number;
+  value: number;
+  opacity: number;
 };
 
 const halfCircleWidth = '0.5rem';
 
-function HsvColorPicker({ width, defaultColor }: Props) {
+function HsvColorPicker({ width, defaultColor, onColorChange }: Props) {
   const colorBoxRef = useRef<HTMLCanvasElement>(null);
   const moveCircleRef = useRef<HTMLDivElement>(null);
-  // const ctxRef = useRef<CanvasRenderingContext2D>();
 
   const [color, setColor] = useState<HsvColor>(HsvColor.copy(defaultColor));
   const colorRef = useRef<HsvColor>(color);
 
   const [mode, setMode] = useState('RGB');
+  const [colorInput, setColorInput] = useState<Inputs>(() => {
+    const rgba = color.toRGBA();
+    return {
+      hex: color.toHex(),
+      red: rgba.a,
+      green: rgba.g,
+      blue: rgba.b,
+      hue: color.hue,
+      saturation: color.saturation,
+      value: color.value,
+      opacity: Math.floor((color.opacity * 100) / 255),
+    };
+  });
 
   // init color picker
   useEffect(() => {
     const canvas = colorBoxRef.current!;
-    // const rect = canvas.getBoundingClientRect();
     const ctx = canvas.getContext('2d')!;
 
     const gradient1 = ctx.createLinearGradient(0, 0, canvas.width, 0);
@@ -45,17 +68,26 @@ function HsvColorPicker({ width, defaultColor }: Props) {
     ctx.fillStyle = gradient2;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // cache
-    // ctxRef.current = ctx;
-
     setPointByHSV(color);
     setMoveCircieColor(color);
-
-    // const color = getColor(rect.top, rect.left, rect);
-    // changeMoveCircieColor(color);
-
-    // setColor(color);
   }, []);
+
+  useEffect(() => {
+    setPointByHSV(color);
+    setMoveCircieColor(color);
+    const rgba = color.toRGBA();
+    setColorInput({
+      hex: color.toHex(),
+      red: rgba.r,
+      green: rgba.g,
+      blue: rgba.b,
+      hue: color.hue,
+      saturation: color.saturation,
+      value: color.value,
+      opacity: Math.floor((color.opacity * 100) / 255),
+    });
+    onColorChange(color.toRGBAStr());
+  }, [color]);
 
   // methods
   const setColorRef = (newColor: HsvColor) => {
@@ -105,63 +137,6 @@ function HsvColorPicker({ width, defaultColor }: Props) {
     setColorByPoint({ x, y });
   };
 
-  // ========================================================================================================================
-
-  // const [color, setColor] = useState<ImageData>();
-
-  // const [mode, setMode] = useState('RGB');
-
-  // const [argb, setARgb] = useState('#FF5BFF7F');
-  // const [r, setR] = useState<number>();
-  // const [g, setG] = useState<number>();
-  // const [b, setB] = useState<number>();
-
-  // const [m, setM] = useState<number>();
-  // const [s, setS] = useState<number>();
-  // const [v, setV] = useState<number>();
-
-  // const [a, setA] = useState<string>();
-
-  // const setSeperateColorValue = () => {
-  //   if (!argb) {
-  //     return;
-  //   }
-  //   let temp = argb.replace('#', '');
-  //   const redStr = temp.substring(2, 4);
-
-  //   const redValue = parseInt(redStr, 16);
-  //   if (redValue >= 0 && redValue <= 255) {
-  //     setR(redValue);
-  //   }
-
-  //   const greenStr = temp.substring(4, 6);
-  //   const greenValue = parseInt(greenStr, 16);
-  //   if (greenValue >= 0 && greenValue <= 255) {
-  //     setG(greenValue);
-  //   }
-
-  //   const blueStr = temp.substring(6, 8);
-  //   const blueValue = parseInt(blueStr, 16);
-  //   if (blueValue >= 0 && blueValue <= 255) {
-  //     setB(blueValue);
-  //   }
-
-  //   const alphaStr = temp.substring(0, 2);
-  //   const alphaValue = parseInt(alphaStr, 16);
-  //   if (alphaValue >= 0 && alphaValue <= 255) {
-  //     setA(`${Math.floor((alphaValue * 100) / 255)}%`);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const temp = {
-  //     r: color?.data[0],
-  //     g: color?.data[2],
-  //     b: color?.data[3],
-  //   }
-
-  // }, [color]);
-
   const onMouseMoveOnColorBox = useCallback((e: MouseEvent) => {
     const rect = colorBoxRef.current!.getBoundingClientRect();
 
@@ -177,10 +152,6 @@ function HsvColorPicker({ width, defaultColor }: Props) {
     }
 
     setColorByClick(e.clientY, e.clientX, rect);
-
-    // const color = getColor(e.clientY, e.clientX, rect);
-    // changeMoveCircieColor(color);
-    // setColor(color);
   }, []);
 
   const onMouseUpOnColorBox = useCallback(() => {
@@ -234,10 +205,7 @@ function HsvColorPicker({ width, defaultColor }: Props) {
           width={width}
           startColor={color?.toRGBAWithVNoOpacity(0) ?? ''}
           endColor={color?.toRGBAWithVNoOpacity(100) ?? ''}
-          initLeftPercent={() => {
-            const { value } = colorRef.current;
-            return value;
-          }}
+          percent={color.value}
           onPercentChange={(percent) => {
             const newColor = new HsvColor({
               ...colorRef.current,
@@ -251,7 +219,7 @@ function HsvColorPicker({ width, defaultColor }: Props) {
           startColor={color?.toRGBAWithOpacity(0) ?? ''}
           endColor={color?.toRGBAWithOpacity(255) ?? ''}
           opacityFlag
-          initLeftPercent={() => Math.floor((color.opacity * 100) / 255)}
+          percent={Math.floor((color.opacity * 100) / 255)}
           onPercentChange={(percent) => {
             const newColor = new HsvColor({
               ...colorRef.current,
@@ -278,7 +246,14 @@ function HsvColorPicker({ width, defaultColor }: Props) {
             className={styles.input}
             type="text"
             value={color.toHex()}
-            // onChange={(e) => setARgb(e.target.value)}
+            onChange={(e) => {
+              const text = e.target.value;
+              if (!/^#([A-Fa-f0-9]{2}){4}$/.test(text)) {
+                return;
+              }
+
+              setColorRef(HsvColor.fromHex(text));
+            }}
           />
         </div>
         {mode === 'RGB' ? (
@@ -287,7 +262,22 @@ function HsvColorPicker({ width, defaultColor }: Props) {
               <input
                 className={styles.input}
                 type="text"
-                value={color.toRGBA().r}
+                value={colorInput.red}
+                onChange={(e) => {
+                  const red = Number(e.target.value);
+                  setColorInput({
+                    ...colorInput,
+                    red,
+                  });
+                  if (red >= 0 && red <= 255) {
+                    setColorRef(
+                      HsvColor.fromRGBA({
+                        ...color.toRGBA(),
+                        r: red,
+                      })
+                    );
+                  }
+                }}
               />
               <span className={styles.label}>Red</span>
             </div>
@@ -295,7 +285,22 @@ function HsvColorPicker({ width, defaultColor }: Props) {
               <input
                 className={styles.input}
                 type="text"
-                value={color.toRGBA().g}
+                value={colorInput.green}
+                onChange={(e) => {
+                  const green = Number(e.target.value);
+                  setColorInput({
+                    ...colorInput,
+                    green,
+                  });
+                  if (green >= 0 && green <= 255) {
+                    setColorRef(
+                      HsvColor.fromRGBA({
+                        ...color.toRGBA(),
+                        g: green,
+                      })
+                    );
+                  }
+                }}
               />
               <span className={styles.label}>Green</span>
             </div>
@@ -303,7 +308,22 @@ function HsvColorPicker({ width, defaultColor }: Props) {
               <input
                 className={styles.input}
                 type="text"
-                value={color.toRGBA().b}
+                value={colorInput.blue}
+                onChange={(e) => {
+                  const blue = Number(e.target.value);
+                  setColorInput({
+                    ...colorInput,
+                    blue,
+                  });
+                  if (blue >= 0 && blue <= 255) {
+                    setColorRef(
+                      HsvColor.fromRGBA({
+                        ...color.toRGBA(),
+                        b: blue,
+                      })
+                    );
+                  }
+                }}
               />
               <span className={styles.label}>Blue</span>
             </div>
@@ -311,19 +331,74 @@ function HsvColorPicker({ width, defaultColor }: Props) {
         ) : (
           <>
             <div className={styles.inputWrap}>
-              <input className={styles.input} type="text" value={color.hue} />
+              <input
+                className={styles.input}
+                type="text"
+                value={colorInput.hue}
+                onChange={(e) => {
+                  const hue = Number(e.target.value);
+                  setColorInput({
+                    ...colorInput,
+                    hue,
+                  });
+                  if (hue >= 0 && hue < 360) {
+                    setColorRef(
+                      new HsvColor({
+                        ...color,
+                        hue,
+                      })
+                    );
+                  }
+                }}
+              />
               <span className={styles.label}>Hue</span>
             </div>
+
             <div className={styles.inputWrap}>
               <input
                 className={styles.input}
                 type="text"
-                value={color.saturation}
+                value={colorInput.saturation}
+                onChange={(e) => {
+                  const saturation = Number(e.target.value);
+                  setColorInput({
+                    ...colorInput,
+                    saturation,
+                  });
+                  if (saturation >= 0 && saturation <= 100) {
+                    setColorRef(
+                      new HsvColor({
+                        ...color,
+                        saturation,
+                      })
+                    );
+                  }
+                }}
               />
               <span className={styles.label}>Saturation</span>
             </div>
+
             <div className={styles.inputWrap}>
-              <input className={styles.input} type="text" value={color.value} />
+              <input
+                className={styles.input}
+                type="text"
+                value={colorInput.value}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  setColorInput({
+                    ...colorInput,
+                    value,
+                  });
+                  if (value >= 0 && value <= 100) {
+                    setColorRef(
+                      new HsvColor({
+                        ...color,
+                        value,
+                      })
+                    );
+                  }
+                }}
+              />
               <span className={styles.label}>Value</span>
             </div>
           </>
@@ -332,9 +407,24 @@ function HsvColorPicker({ width, defaultColor }: Props) {
           <input
             className={styles.input}
             type="text"
-            value={`${color.toOpacityPercent()}%`}
+            value={colorInput.opacity}
+            onChange={(e) => {
+              const num = Number(e.target.value);
+              setColorInput({
+                ...colorInput,
+                opacity: num,
+              });
+              if (num >= 0 && num <= 100) {
+                setColorRef(
+                  new HsvColor({
+                    ...color,
+                    opacity: (num / 100) * 255,
+                  })
+                );
+              }
+            }}
           />
-          <span className={styles.label}>Opacity</span>
+          <span className={styles.label}>Opacity(%)</span>
         </div>
       </div>
     </div>
