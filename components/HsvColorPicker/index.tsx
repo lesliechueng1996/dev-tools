@@ -1,7 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './style.module.css';
+import ColorBar from './ColorBar';
+import { rgbToHsv } from './util';
 
 type Props = {
   width: number;
@@ -11,18 +13,74 @@ function HsvColorPicker({ width }: Props) {
   const colorBoxRef = useRef<HTMLCanvasElement>(null);
   const moveCircleRef = useRef<HTMLDivElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D>();
-  const valueCanvasRef = useRef<HTMLCanvasElement>(null);
-  const opacityCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [color, setColor] = useState<ImageData>();
 
-  const getColor = (mouseX: number, mouseY: number, rect: DOMRect) => {
-    let y = mouseX - rect.top;
+  const [mode, setMode] = useState('RGB');
+
+  const [argb, setARgb] = useState('#FF5BFF7F');
+  const [r, setR] = useState<number>();
+  const [g, setG] = useState<number>();
+  const [b, setB] = useState<number>();
+
+  const [m, setM] = useState<number>();
+  const [s, setS] = useState<number>();
+  const [v, setV] = useState<number>();
+
+  const [a, setA] = useState<string>();
+
+  const changeMoveCircieColor = (bgColor: ImageData) => {
+    const color =
+      0.213 * bgColor.data[0] +
+        0.715 * bgColor.data[1] +
+        0.072 * bgColor.data[2] >
+      255 / 2;
+    moveCircleRef.current!.style.borderColor = color ? '#000000' : '#ffffff';
+  };
+
+  const setSeperateColorValue = () => {
+    if (!argb) {
+      return;
+    }
+    let temp = argb.replace('#', '');
+    const redStr = temp.substring(2, 4);
+
+    const redValue = parseInt(redStr, 16);
+    if (redValue >= 0 && redValue <= 255) {
+      setR(redValue);
+    }
+
+    const greenStr = temp.substring(4, 6);
+    const greenValue = parseInt(greenStr, 16);
+    if (greenValue >= 0 && greenValue <= 255) {
+      setG(greenValue);
+    }
+
+    const blueStr = temp.substring(6, 8);
+    const blueValue = parseInt(blueStr, 16);
+    if (blueValue >= 0 && blueValue <= 255) {
+      setB(blueValue);
+    }
+
+    const alphaStr = temp.substring(0, 2);
+    const alphaValue = parseInt(alphaStr, 16);
+    if (alphaValue >= 0 && alphaValue <= 255) {
+      setA(`${Math.floor((alphaValue * 100) / 255)}%`);
+    }
+  };
+
+  useEffect(() => {
+    setSeperateColorValue();
+  }, [argb]);
+
+  const getColor = (mouseY: number, mouseX: number, rect: DOMRect) => {
+    let y = mouseY - rect.top;
     if (y < 0) {
       y = 0;
     } else if (y >= width) {
       y = width - 1;
     }
 
-    let x = mouseY - rect.left;
+    let x = mouseX - rect.left;
     if (x < 0) {
       x = 0;
     } else if (x >= width) {
@@ -31,46 +89,6 @@ function HsvColorPicker({ width }: Props) {
 
     const color = ctxRef.current!.getImageData(x, y, 1, 1);
     return color;
-  };
-
-  const reDrawValueCanvas = (color: ImageData) => {
-    const valueCanvas = valueCanvasRef.current!;
-    const valueCtx = valueCanvas.getContext('2d')!;
-
-    valueCtx.clearRect(0, 0, valueCanvas.width, valueCanvas.height);
-    const valueGradient = valueCtx.createLinearGradient(
-      0,
-      0,
-      valueCanvas.width,
-      0
-    );
-    valueGradient.addColorStop(0, '#000000');
-    valueGradient.addColorStop(
-      1,
-      `rgb(${color.data[0]}, ${color.data[1]}, ${color.data[2]})`
-    );
-    valueCtx.fillStyle = valueGradient;
-    valueCtx.fillRect(0, 0, valueCanvas.width, valueCanvas.height);
-  };
-
-  const reDrawOpacityCanvas = (color: ImageData) => {
-    const canvas = opacityCanvasRef.current!;
-    const ctx = canvas.getContext('2d')!;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-    gradient.addColorStop(
-      0,
-      `rgba(${color.data[0]}, ${color.data[1]}, ${color.data[2]}, 255)`
-    );
-    gradient.addColorStop(
-      1,
-      `rgba(${color.data[0]}, ${color.data[1]}, ${color.data[2]}, 0)`
-      // `rgba(0, 0, 0, 0)`
-    );
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
 
   useEffect(() => {
@@ -98,9 +116,18 @@ function HsvColorPicker({ width }: Props) {
     ctxRef.current = ctx;
 
     const color = getColor(rect.top, rect.left, rect);
-    reDrawValueCanvas(color);
-    reDrawOpacityCanvas(color);
+    changeMoveCircieColor(color);
+    setColor(color);
   }, []);
+
+  // useEffect(() => {
+  //   const temp = {
+  //     r: color?.data[0],
+  //     g: color?.data[2],
+  //     b: color?.data[3],
+  //   }
+
+  // }, [color]);
 
   const onMouseMoveOnColorBox = useCallback((e: MouseEvent) => {
     const rect = colorBoxRef.current!.getBoundingClientRect();
@@ -117,8 +144,8 @@ function HsvColorPicker({ width }: Props) {
     }
 
     const color = getColor(e.clientY, e.clientX, rect);
-    reDrawValueCanvas(color);
-    reDrawOpacityCanvas(color);
+    changeMoveCircieColor(color);
+    setColor(color);
   }, []);
 
   const onMouseUpOnColorBox = useCallback(() => {
@@ -126,13 +153,10 @@ function HsvColorPicker({ width }: Props) {
     window.removeEventListener('mouseup', onMouseUpOnColorBox);
   }, []);
 
-  const onCircleMouseDown = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      window.addEventListener('mousemove', onMouseMoveOnColorBox);
-      window.addEventListener('mouseup', onMouseUpOnColorBox);
-    },
-    []
-  );
+  const onCircleMouseDown = useCallback(() => {
+    window.addEventListener('mousemove', onMouseMoveOnColorBox);
+    window.addEventListener('mouseup', onMouseUpOnColorBox);
+  }, []);
 
   const onColorBoxMouseDown = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -144,8 +168,8 @@ function HsvColorPicker({ width }: Props) {
         e.clientX - rect.left
       }px - 0.5rem)`;
       const color = getColor(e.clientY, e.clientX, rect);
-      reDrawValueCanvas(color);
-      reDrawOpacityCanvas(color);
+      changeMoveCircieColor(color);
+      setColor(color);
       window.addEventListener('mousemove', onMouseMoveOnColorBox);
       window.addEventListener('mouseup', onMouseUpOnColorBox);
     },
@@ -153,8 +177,8 @@ function HsvColorPicker({ width }: Props) {
   );
 
   return (
-    <div>
-      <div style={{ width: `${width}px` }}>
+    <div style={{ width: `${width}px` }}>
+      <div>
         <div
           className={styles.colorBox}
           style={{ width: `${width}px`, height: `${width}px` }}
@@ -171,14 +195,92 @@ function HsvColorPicker({ width }: Props) {
             className={styles.moveCircle}
           ></div>
         </div>
-        <div className={styles.valueBox}>
-          <canvas ref={valueCanvasRef} width={width} height={20} />
+        <ColorBar
+          width={width}
+          startColor="#000000"
+          endColor={
+            color
+              ? `rgb(${color.data[0]}, ${color.data[1]}, ${color.data[2]})`
+              : ''
+          }
+          onColorChange={(imageData) => {
+            console.log(imageData);
+          }}
+        />
+        <ColorBar
+          width={width}
+          startColor={
+            color
+              ? `rgba(${color.data[0]}, ${color.data[1]}, ${color.data[2]}, 0)`
+              : ''
+          }
+          endColor={
+            color
+              ? `rgba(${color.data[0]}, ${color.data[1]}, ${color.data[2]}, 255)`
+              : ''
+          }
+          opacityFlag
+          onOpacityChange={(opacity) => {
+            console.log(opacity);
+          }}
+        />
+      </div>
+      <div>
+        <div className={styles.inputWrap}>
+          <div className={styles.selectWrap}>
+            <select
+              value={mode}
+              onChange={(e) => {
+                setMode(e.target.value);
+              }}
+            >
+              <option value="RGB">RGB</option>
+              <option value="HSV">HSV</option>
+            </select>
+          </div>
+          <input
+            className={styles.input}
+            type="text"
+            value={argb}
+            onChange={(e) => setARgb(e.target.value)}
+          />
         </div>
-        <div className={styles.opacityBox}>
-          <canvas ref={opacityCanvasRef} width={width} height={20} />
+        {mode === 'RGB' ? (
+          <>
+            <div className={styles.inputWrap}>
+              <input className={styles.input} type="text" value={r} />
+              <span className={styles.label}>Red</span>
+            </div>
+            <div className={styles.inputWrap}>
+              <input className={styles.input} type="text" value={g} />
+              <span className={styles.label}>Green</span>
+            </div>
+            <div className={styles.inputWrap}>
+              <input className={styles.input} type="text" value={b} />
+              <span className={styles.label}>Blue</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.inputWrap}>
+              <input className={styles.input} type="text" value={r} />
+              <span className={styles.label}>Hue</span>
+            </div>
+            <div className={styles.inputWrap}>
+              <input className={styles.input} type="text" value={g} />
+              <span className={styles.label}>Saturation</span>
+            </div>
+            <div className={styles.inputWrap}>
+              <input className={styles.input} type="text" value={b} />
+              <span className={styles.label}>Value</span>
+            </div>
+          </>
+        )}
+        <div className={styles.inputWrap}>
+          <input className={styles.input} type="text" value={a} />
+          <span className={styles.label}>Opacity</span>
         </div>
       </div>
-      <div></div>
     </div>
   );
 }
