@@ -1,4 +1,5 @@
 import HsvColorPicker from '@/components/HsvColorPicker';
+import HsvColor from '@/components/HsvColorPicker/HsvColor';
 
 function ColorPickerPage() {
   return (
@@ -22,7 +23,17 @@ function ColorPickerPage() {
 
       <div>
         <div>
-          <HsvColorPicker width={300} />
+          <HsvColorPicker
+            width={300}
+            defaultColor={
+              new HsvColor({
+                hue: 128,
+                saturation: 65,
+                value: 69,
+                opacity: 200,
+              })
+            }
+          />
         </div>
         <div>{/* Background color picker */}</div>
       </div>

@@ -1,22 +1,27 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import styles from './ColorBar.module.css';
+import Color from './Color';
 
 type Props = {
+  // color: Color;
   width: number;
   startColor: string;
   endColor: string;
+  initLeftPercent: () => number;
   opacityFlag?: boolean;
-  onColorChange?: (color: ImageData) => void;
-  onOpacityChange?: (opacity: number) => void;
+  onPercentChange: (percent: number) => void;
 };
 
+const halfCircleWidth = 7.5;
+
 function ColorBar({
+  // color,
   width,
   startColor,
   endColor,
   opacityFlag = false,
-  onColorChange,
-  onOpacityChange,
+  initLeftPercent,
+  onPercentChange,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const moveCircleRef = useRef<HTMLDivElement>(null);
@@ -32,38 +37,23 @@ function ColorBar({
       gradient.addColorStop(1, endColor);
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const left = initLeftPercent();
+      moveCircleRef.current!.style.left = `${
+        (left / 100) * width - halfCircleWidth
+      }px`;
     }
   }, [startColor, endColor]);
 
   const getColor = (left: number) => {
-    const circleWidth = moveCircleRef.current!.getBoundingClientRect().width;
-    if (opacityFlag) {
-      if (left >= width - circleWidth) {
-        onOpacityChange && onOpacityChange(255);
-        return;
-      }
-      if (left <= 0) {
-        onOpacityChange && onOpacityChange(0);
-        return;
-      }
-      onOpacityChange &&
-        onOpacityChange(Math.floor((left / (width - circleWidth)) * 255));
-      return;
+    let percentage = Math.floor((left / (width - 2 * halfCircleWidth)) * 100);
+    if (percentage < 0) {
+      percentage = 0;
     }
-
-    let realLeft;
-    if (left >= width - circleWidth) {
-      realLeft = 300;
-    } else if (left <= 0) {
-      realLeft = 0;
-    } else {
-      realLeft = left;
+    if (percentage > 100) {
+      percentage = 100;
     }
-
-    const color = canvasRef
-      .current!.getContext('2d')!
-      .getImageData(realLeft, 0, 1, 1);
-    onColorChange && onColorChange(color);
+    onPercentChange(percentage);
   };
 
   const onMouseMoveOnColorBar = useCallback((e: MouseEvent) => {
