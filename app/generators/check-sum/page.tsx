@@ -9,7 +9,6 @@ import {
   DocumentIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { useEffect, useRef, useState } from 'react';
 import Switch from 'react-switch';
 import md5 from 'crypto-js/md5';
@@ -18,6 +17,7 @@ import sha256 from 'crypto-js/sha256';
 import sha384 from 'crypto-js/sha384';
 import sha512 from 'crypto-js/sha512';
 import hex from 'crypto-js/enc-hex';
+import TipBlock from '@/components/TipBlock';
 
 const algorithmList = ['MD5', 'SHA1', 'SHA256', 'SHA384', 'SHA512'];
 const getHashHelper = (algorithm: string) => {
@@ -229,23 +229,14 @@ function CheckSumPage() {
           />
         </div>
         {isCorrect !== null && (
-          <div
-            className={`${
-              isCorrect ? 'bg-emerald-200' : 'bg-rose-300'
-            } rounded-md px-3 py-5 border shadow flex items-center gap-3`}
-          >
-            {isCorrect ? (
-              <>
-                <CheckCircleIcon className="w-6 h-6 text-emerald-700" /> The
-                hashes are the same.
-              </>
-            ) : (
-              <>
-                <XCircleIcon className="w-6 h-6 text-rose-700" /> The hashes are
-                different.
-              </>
-            )}
-          </div>
+          <TipBlock
+            type={isCorrect ? 'success' : 'error'}
+            msg={
+              isCorrect
+                ? 'The hashes are the same.'
+                : 'The hashes are different.'
+            }
+          />
         )}
       </div>
     </div>
