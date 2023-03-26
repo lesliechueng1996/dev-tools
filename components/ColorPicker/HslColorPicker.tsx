@@ -4,11 +4,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './style.module.css';
 import ColorBar from './HsvColorBar';
 import HsvColor from './HsvColor';
+import HslColorBar from './HslColorBar';
 
 type Props = {
   width: number;
   defaultColor: HsvColor;
-  onColorChange: (rgba: string) => void;
+  onColorChange: (color: HsvColor) => void;
 };
 
 type Inputs = {
@@ -46,31 +47,23 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
     };
   });
 
-  // init color picker
   useEffect(() => {
     const canvas = colorBoxRef.current!;
     const ctx = canvas.getContext('2d')!;
 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     const gradient1 = ctx.createLinearGradient(0, 0, canvas.width, 0);
-    gradient1.addColorStop(0, '#ff0000');
-    gradient1.addColorStop(0.17, '#ffff00');
-    gradient1.addColorStop(0.33, '#00ff00');
-    gradient1.addColorStop(0.5, '#00ffff');
-    gradient1.addColorStop(0.67, '#0000fe');
-    gradient1.addColorStop(0.83, '#ff00ff');
-    gradient1.addColorStop(1, '#ff0000');
+    gradient1.addColorStop(0, '#ffffff');
+    gradient1.addColorStop(1, color.toRGBAWithOpacity(255));
     ctx.fillStyle = gradient1;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const gradient2 = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient2.addColorStop(0, 'rgba(255, 255, 255, 0)');
-    gradient2.addColorStop(1, 'rgba(255, 255, 255, 1)');
+    gradient2.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    gradient2.addColorStop(1, 'rgba(0, 0, 0, 1)');
     ctx.fillStyle = gradient2;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    setPointByHSV(color);
-    setMoveCircieColor(color);
-  }, []);
+  }, [color.hue]);
 
   useEffect(() => {
     setPointByHSV(color);
@@ -86,7 +79,7 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
       value: color.value,
       opacity: Math.floor((color.opacity * 100) / 255),
     });
-    onColorChange(color.toRGBAStr());
+    onColorChange(color);
   }, [color]);
 
   // methods
@@ -96,9 +89,9 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
   };
 
   const setPointByHSV = (color: HsvColor) => {
-    const { hue, saturation } = color;
-    const x = (width * hue) / 360;
-    const y = width - (width * saturation) / 100;
+    const { saturation, value } = color;
+    const x = (width * saturation) / 100;
+    const y = width - (width * value) / 100;
     moveCircleRef.current!.style.left = `calc(${x}px - ${halfCircleWidth})`;
     moveCircleRef.current!.style.top = `calc(${y}px - ${halfCircleWidth})`;
   };
@@ -110,9 +103,10 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
   };
 
   const setColorByPoint = ({ x, y }: { x: number; y: number }) => {
-    const hue = (x * 360) / width;
-    const saturation = 100 - (y * 100) / width;
-    const { value, opacity } = colorRef.current;
+    const saturation = (x / width) * 100;
+    const value = 100 - (y / width) * 100;
+
+    const { hue, opacity } = colorRef.current;
     const newColor = new HsvColor({ hue, saturation, value, opacity });
 
     setMoveCircieColor(newColor);
@@ -201,15 +195,15 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
             className={styles.moveCircle}
           ></div>
         </div>
-        <ColorBar
+        <HslColorBar
           width={width}
-          startColor={color?.toRGBAWithVNoOpacity(0) ?? ''}
-          endColor={color?.toRGBAWithVNoOpacity(100) ?? ''}
-          percent={color.value}
+          percent={Math.floor((color.hue / 360) * 100)}
           onPercentChange={(percent) => {
+            const hue = Math.floor((percent / 100) * 360);
+
             const newColor = new HsvColor({
               ...colorRef.current,
-              value: percent,
+              hue,
             });
             setColorRef(newColor);
           }}

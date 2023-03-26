@@ -8,7 +8,7 @@ import HsvColor from './HsvColor';
 type Props = {
   width: number;
   defaultColor: HsvColor;
-  onColorChange: (rgba: string) => void;
+  onColorChange: (color: HsvColor) => void;
 };
 
 type Inputs = {
@@ -86,7 +86,7 @@ function HsvColorPicker({ width, defaultColor, onColorChange }: Props) {
       value: color.value,
       opacity: Math.floor((color.opacity * 100) / 255),
     });
-    onColorChange(color.toRGBAStr());
+    onColorChange(color);
   }, [color]);
 
   // methods

@@ -132,12 +132,14 @@ export default class HsvColor {
 
   toRGBAStr() {
     const rgba = this.toRGBA();
-    return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    const a = rgba.a / 255;
+    return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${a})`;
   }
 
   toRGBAWithOpacity(opacity: number) {
     const rgba = this.toRGBA(opacity);
-    return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    const a = rgba.a / 255;
+    return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${a})`;
   }
 
   toRGBAWithVNoOpacity(newV: number) {
@@ -145,7 +147,8 @@ export default class HsvColor {
     tempColor.value = newV;
     tempColor.opacity = 255;
     const rgba = tempColor.toRGBA();
-    return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    const a = rgba.a / 255;
+    return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${a})`;
   }
 
   toHex() {
