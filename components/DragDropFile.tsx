@@ -5,15 +5,19 @@ import path from 'path';
 type Props = {
   acceptAll?: boolean;
   acceptFiles?: string[];
-  onFileLoad: (file: File) => void;
+  onFileLoad?: (file: File) => void;
   className?: string;
+  multiFile?: boolean;
+  onFilesLoad?: (files: FileList) => void;
 };
 
 function DragDropFile({
   className = '',
   acceptAll = false,
   acceptFiles = [],
+  multiFile = false,
   onFileLoad,
+  onFilesLoad,
 }: Props) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [onDrag, setOnDrag] = useState(false);
@@ -29,13 +33,27 @@ function DragDropFile({
     e.preventDefault();
     setOnDrag(false);
 
-    if (e.dataTransfer.files.length > 1) {
+    if (!multiFile && e.dataTransfer.files.length > 1) {
       toast.error('Only can upload one file');
       return;
     }
 
     if (!e.dataTransfer.types.includes('Files')) {
       toast.error('Only can upload file');
+      return;
+    }
+
+    if (multiFile) {
+      const files = e.dataTransfer.files;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const extName = path.extname(file.name);
+        if (!acceptAll && !acceptFiles.includes(extName)) {
+          toast.error(`Only can upload ${acceptFiles.join(', ')} file`);
+          return;
+        }
+      }
+      onFilesLoad && onFilesLoad(e.dataTransfer.files);
       return;
     }
 
@@ -46,13 +64,17 @@ function DragDropFile({
       return;
     }
 
-    onFileLoad(file);
+    onFileLoad && onFileLoad(file);
   };
 
   const onChangeFile = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
+      if (multiFile) {
+        onFilesLoad && onFilesLoad(e.target.files);
+        return;
+      }
       const file = e.target.files[0];
-      onFileLoad(file);
+      onFileLoad && onFileLoad(file);
     }
   };
 
@@ -71,10 +93,11 @@ function DragDropFile({
         className="hidden"
         ref={fileInput}
         accept={acceptAll ? '*' : acceptFiles.join(', ')}
+        multiple={multiFile}
         onChange={onChangeFile}
       />
       <div className="text-center">
-        Drag & drop a{' '}
+        Drag & drop {!multiFile && 'a'}{' '}
         {acceptAll
           ? 'any'
           : acceptFiles
