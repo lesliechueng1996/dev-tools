@@ -139,7 +139,7 @@ const menuData: MenuItem[] = [
         label: 'JWT',
         isLeaf: true,
         icon: JwtDecoderSvg,
-        link: '/encoders-decoders/jwt-decoder',
+        link: '/encoders-decoders/jwt',
         name: 'JWT Encoder / Decoder',
         description: 'Decode a JWT header, payload and signature',
       },
