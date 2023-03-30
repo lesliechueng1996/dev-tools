@@ -9,15 +9,21 @@ import {
   FingerPrintIcon,
   LightBulbIcon,
   ClockIcon,
+  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Switch from 'react-switch';
-import { SwitchValueProp } from '@/components/DropdownBox';
+import { SwitchDateProp, SwitchValueProp } from '@/components/DropdownBox';
 import TipBlock from '@/components/TipBlock';
+import PasteLoadClearBar from '@/components/PasteLoadClearBar';
+import Editor, { OnMount } from '@monaco-editor/react';
+import * as jose from 'jose';
+import dayjs from 'dayjs';
 
 type Settings = ShowHideSettingsProps['items'];
+type Editor = Parameters<OnMount>[0];
 
-const options = [
+const options: string[] = [
   'HS256',
   'HS384',
   'HS512',
@@ -46,14 +52,27 @@ function JwtPage() {
     flagValue: false,
     textValue: '',
   });
-  const [hasExpirations, setHasExpirations] = useState<SwitchValueProp>({
+  const [hasExpirations, setHasExpirations] = useState<SwitchDateProp>({
     flagValue: false,
-    textValue: '',
+    textValue: {
+      year: 0,
+      month: 0,
+      day: 0,
+      hour: 1,
+      minute: 0,
+    },
   });
   const [hasDefaultTime, setHasDefaultTime] = useState<SwitchValueProp>({
     flagValue: false,
     textValue: '', // not use
   });
+
+  // encoding token
+  const tokenOutputRef = useRef<HTMLTextAreaElement>(null);
+  const headerEncodeRef = useRef<Editor>(null);
+  const payloadEncodeRef = useRef<Editor>(null);
+  const [secretInput, setSecretInput] = useState('');
+
   const [errorMsg, setErrorMsg] = useState('');
 
   const encodeSettings: Settings = [
@@ -65,6 +84,17 @@ function JwtPage() {
       options,
       value: algorithm,
       onValueChange: (value) => {
+        const temp = JSON.parse(headerEncodeRef.current.getValue());
+        headerEncodeRef.current.setValue(
+          JSON.stringify(
+            {
+              ...temp,
+              alg: value,
+            },
+            null,
+            4
+          )
+        );
         setAlgorithm(value as string);
       },
     },
@@ -92,13 +122,13 @@ function JwtPage() {
     },
     {
       title: 'Token has expirations',
-      subTitle: 'Valid audience',
       icon: <LightBulbIcon className="w-6 h-6" />,
       hasItem: true,
       type: 'switch',
+      subType: 'date',
       value: hasExpirations,
       onValueChange: (value) => {
-        setHasExpirations(value as SwitchValueProp);
+        setHasExpirations(value as SwitchDateProp);
       },
     },
     {
@@ -113,8 +143,105 @@ function JwtPage() {
     },
   ];
 
+  const writeClipboard = () => {
+    const clipboard = navigator.clipboard;
+    if (clipboard) {
+      clipboard.writeText(tokenOutputRef.current!.value);
+    }
+  };
+
+  const handleHeaderEditorMount = (editor: Editor) => {
+    editor.updateOptions({ minimap: { enabled: false }, readOnly: !isEncode });
+    headerEncodeRef.current = editor;
+
+    headerEncodeRef.current.setValue(
+      JSON.stringify(
+        {
+          alg: 'HS256',
+          typ: 'JWT',
+        },
+        null,
+        4
+      )
+    );
+  };
+
+  const handlePayloadEditorMount = (editor: Editor) => {
+    editor.updateOptions({ minimap: { enabled: false }, readOnly: !isEncode });
+    payloadEncodeRef.current = editor;
+  };
+
+  const encodeJwt = useCallback(async () => {
+    let header, payload;
+    try {
+      header = JSON.parse(headerEncodeRef.current!.getValue());
+      payload = JSON.parse(payloadEncodeRef.current!.getValue());
+    } catch (e) {
+      setErrorMsg('Invalid JSON header or payload');
+      return;
+    }
+    if (hasIssuer.flagValue) {
+      payload.iss = hasIssuer.textValue;
+      payload.iat = Math.floor(Date.now() / 1000);
+    }
+    if (hasAudience.flagValue) {
+      payload.aud = hasAudience.textValue;
+    }
+    if (hasExpirations.flagValue) {
+      const { year, month, day, hour, minute } = hasExpirations.textValue;
+      const exp = dayjs()
+        .add(year, 'year')
+        .add(month, 'month')
+        .add(day, 'day')
+        .add(hour, 'hour')
+        .add(minute, 'minute')
+        .unix();
+      payload.exp = exp;
+    }
+    if (hasDefaultTime.flagValue) {
+      payload.exp = Math.floor(Date.now() / 1000) + 60 * 60;
+      payload.iat = Math.floor(Date.now() / 1000);
+      payload.nbf = payload.iat;
+    }
+    try {
+      if (algorithm.startsWith('HS')) {
+        const secret = new TextEncoder().encode(secretInput);
+        const jwt = new jose.SignJWT(payload).setProtectedHeader({
+          alg: algorithm,
+          typ: 'JWT',
+        });
+        const token = await jwt.sign(secret);
+        tokenOutputRef.current!.value = token;
+        setErrorMsg('');
+      } else {
+        const privateKey = await jose.importPKCS8(secretInput, algorithm);
+        const jwt = new jose.SignJWT(payload).setProtectedHeader({
+          alg: algorithm,
+          typ: 'JWT',
+        });
+        const token = await jwt.sign(privateKey);
+        tokenOutputRef.current!.value = token;
+        setErrorMsg('');
+      }
+    } catch (error: any) {
+      console.log(error);
+      setErrorMsg(error.message);
+    }
+  }, [
+    secretInput,
+    algorithm,
+    hasIssuer,
+    hasAudience,
+    hasExpirations,
+    hasDefaultTime,
+  ]);
+
+  useEffect(() => {
+    encodeJwt();
+  }, [encodeJwt]);
+
   return (
-    <div className="min-h-full flex flex-col gap-5">
+    <div className="space-y-5">
       <h1 className="text-3xl">JWT Encoder / Decoder</h1>
 
       <div>
@@ -174,6 +301,70 @@ function JwtPage() {
 
       {/* Error Tip */}
       {errorMsg && <TipBlock type="error" msg={errorMsg} />}
+
+      {/* Encoding - Token */}
+      {isEncode && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2>Token</h2>
+            <button
+              className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+              title="Copy"
+              onClick={writeClipboard}
+            >
+              <DocumentDuplicateIcon className="w-6 h-6" />
+              Copy
+            </button>
+          </div>
+          <textarea
+            ref={tokenOutputRef}
+            readOnly
+            className="w-full h-24 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          ></textarea>
+        </div>
+      )}
+
+      {/* Header & Payload */}
+      <div className="flex gap-3 w-full">
+        <div className="flex-1">
+          <PasteLoadClearBar
+            title="Header"
+            onValueChange={(value) => headerEncodeRef.current.setValue(value)}
+          />
+          <Editor
+            height={200}
+            language="json"
+            onMount={handleHeaderEditorMount}
+            onChange={() => encodeJwt()}
+          />
+        </div>
+        <div className="flex-1">
+          <PasteLoadClearBar
+            title="Payload"
+            onValueChange={(value) => payloadEncodeRef.current.setValue(value)}
+          />
+          <Editor
+            height={200}
+            language="json"
+            onMount={handlePayloadEditorMount}
+            onChange={() => encodeJwt()}
+          />
+        </div>
+      </div>
+
+      {/* Secret */}
+      <div>
+        <PasteLoadClearBar
+          title={algorithm.startsWith('HS') ? 'Secret' : 'Private Key'}
+          onValueChange={(value) => setSecretInput(value)}
+        />
+        <textarea
+          placeholder={algorithm.startsWith('HS') ? '' : 'PKCS#8'}
+          value={secretInput}
+          onChange={(e) => setSecretInput(e.target.value)}
+          className="w-full h-24 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+        ></textarea>
+      </div>
     </div>
   );
 }

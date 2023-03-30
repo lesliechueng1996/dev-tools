@@ -4,9 +4,15 @@ import Switch from 'react-switch';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import PasteInput from '@/components/PasteInput';
 import { useState } from 'react';
+import JwtDateTime, { JwtDateTimeType } from './JwtDateTime';
 
 export type SwitchValueProp = {
   textValue: string;
+  flagValue: boolean;
+};
+
+export type SwitchDateProp = {
+  textValue: JwtDateTimeType;
   flagValue: boolean;
 };
 
@@ -16,8 +22,9 @@ export type Props = {
   icon: JSX.Element;
   hasItem: boolean;
   type: 'select' | 'switch';
-  value: string | SwitchValueProp;
-  onValueChange: (value: string | SwitchValueProp) => void;
+  value: string | SwitchValueProp | SwitchDateProp;
+  onValueChange: (value: string | SwitchValueProp | SwitchDateProp) => void;
+  subType?: 'input' | 'date';
   // select
   options?: string[];
 };
@@ -27,6 +34,7 @@ function DropdownBox({
   icon,
   hasItem,
   type,
+  subType = 'input',
   value,
   onValueChange,
   options = [],
@@ -93,18 +101,33 @@ function DropdownBox({
           className="grid transition-all duration-300 ease-in-out"
           style={{ gridTemplateRows: `${expand ? '1fr' : '0fr'}` }}
         >
-          <PasteInput
-            className="min-h-0 overflow-hidden"
-            title={subTitle ?? ''}
-            value={(value as SwitchValueProp).textValue}
-            onValueChange={(text) => {
-              const tempValue = value as SwitchValueProp;
-              onValueChange({
-                ...tempValue,
-                textValue: text,
-              });
-            }}
-          />
+          {subType === 'input' && (
+            <PasteInput
+              className="min-h-0 overflow-hidden"
+              title={subTitle ?? ''}
+              value={(value as SwitchValueProp).textValue}
+              onValueChange={(text) => {
+                const tempValue = value as SwitchValueProp;
+                onValueChange({
+                  ...tempValue,
+                  textValue: text,
+                });
+              }}
+            />
+          )}
+          {subType === 'date' && (
+            <JwtDateTime
+              className="min-h-0 overflow-hidden"
+              value={(value as SwitchDateProp).textValue}
+              onValueChange={(text) => {
+                const tempValue = value as SwitchDateProp;
+                onValueChange({
+                  ...tempValue,
+                  textValue: text,
+                });
+              }}
+            />
+          )}
         </div>
       )}
     </div>
