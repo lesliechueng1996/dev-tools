@@ -10,6 +10,7 @@ import {
   LightBulbIcon,
   ClockIcon,
   DocumentDuplicateIcon,
+  CheckBadgeIcon,
 } from '@heroicons/react/24/outline';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Switch from 'react-switch';
@@ -67,11 +68,32 @@ function JwtPage() {
     textValue: '', // not use
   });
 
+  // decoding properties
+  const [validateIssuer, setValidateIssuer] = useState<SwitchValueProp>({
+    flagValue: false,
+    textValue: '',
+  });
+  const [validateAudience, setValidateAudience] = useState<SwitchValueProp>({
+    flagValue: false,
+    textValue: '',
+  });
+  const [validateLifetime, setValidateLifetime] = useState<SwitchValueProp>({
+    flagValue: false,
+    textValue: '', // not use
+  });
+  const [validateActor, setValidateActor] = useState<SwitchValueProp>({
+    flagValue: false,
+    textValue: '', // not use
+  });
+
   // encoding token
   const tokenOutputRef = useRef<HTMLTextAreaElement>(null);
   const headerEncodeRef = useRef<Editor>(null);
   const payloadEncodeRef = useRef<Editor>(null);
   const [secretInput, setSecretInput] = useState('');
+
+  // decoding token
+  const [tokenInput, setTokenInput] = useState('');
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -143,6 +165,51 @@ function JwtPage() {
     },
   ];
 
+  const decodeSettings: Settings = [
+    {
+      title: 'Validate issuer',
+      subTitle: 'Valid issuers',
+      icon: <CheckBadgeIcon className="w-6 h-6" />,
+      hasItem: true,
+      type: 'switch',
+      value: validateIssuer,
+      onValueChange: (value) => {
+        setValidateIssuer(value as SwitchValueProp);
+      },
+    },
+    {
+      title: 'Validate audience',
+      subTitle: 'Valid audiences',
+      icon: <CheckBadgeIcon className="w-6 h-6" />,
+      hasItem: true,
+      type: 'switch',
+      value: validateAudience,
+      onValueChange: (value) => {
+        setValidateAudience(value as SwitchValueProp);
+      },
+    },
+    {
+      title: 'Validate lifetime',
+      icon: <CheckBadgeIcon className="w-6 h-6" />,
+      hasItem: false,
+      type: 'switch',
+      value: validateLifetime,
+      onValueChange: (value) => {
+        setValidateLifetime(value as SwitchValueProp);
+      },
+    },
+    {
+      title: 'Validate actor',
+      icon: <CheckBadgeIcon className="w-6 h-6" />,
+      hasItem: false,
+      type: 'switch',
+      value: validateActor,
+      onValueChange: (value) => {
+        setValidateActor(value as SwitchValueProp);
+      },
+    },
+  ];
+
   const writeClipboard = () => {
     const clipboard = navigator.clipboard;
     if (clipboard) {
@@ -172,6 +239,13 @@ function JwtPage() {
   };
 
   const encodeJwt = useCallback(async () => {
+    if (!isEncode) {
+      return;
+    }
+    if (headerEncodeRef.current === null || payloadEncodeRef.current === null) {
+      return;
+    }
+
     let header, payload;
     try {
       header = JSON.parse(headerEncodeRef.current!.getValue());
@@ -234,11 +308,140 @@ function JwtPage() {
     hasAudience,
     hasExpirations,
     hasDefaultTime,
+    isEncode,
   ]);
+
+  const decodeJwt = useCallback(async () => {
+    if (isEncode || !tokenInput) {
+      return;
+    }
+    const jwt = tokenInput;
+    try {
+      const protectedHeader = jose.decodeProtectedHeader(jwt);
+      const payload = jose.decodeJwt(jwt);
+      headerEncodeRef.current!.setValue(
+        JSON.stringify(protectedHeader, null, 4)
+      );
+      payloadEncodeRef.current!.setValue(JSON.stringify(payload, null, 4));
+
+      if (needValidate) {
+        // validate secret
+        if (!protectedHeader.alg) {
+          setErrorMsg('Invalid JWT');
+          return;
+        }
+        if (protectedHeader.alg.startsWith('HS')) {
+          const secret = new TextEncoder().encode(secretInput);
+          const jwt = new jose.SignJWT(payload).setProtectedHeader({
+            alg: protectedHeader.alg,
+            typ: 'JWT',
+          });
+          const token = await jwt.sign(secret);
+          if (token === tokenInput) {
+            setErrorMsg('');
+          } else {
+            setErrorMsg('Invalid secret');
+            return;
+          }
+        } else {
+          const privateKey = await jose.importPKCS8(
+            secretInput,
+            protectedHeader.alg
+          );
+          const jwt = new jose.SignJWT(payload).setProtectedHeader({
+            alg: protectedHeader.alg,
+            typ: 'JWT',
+          });
+          const token = await jwt.sign(privateKey);
+          if (token === tokenInput) {
+            setErrorMsg('');
+          } else {
+            setErrorMsg('Invalid secret');
+            return;
+          }
+        }
+
+        // validate issuer
+        if (validateIssuer.flagValue) {
+          if (payload.iss !== validateIssuer.textValue) {
+            setErrorMsg('Invalid issuer');
+            return;
+          }
+        }
+
+        // validate audience
+        if (validateAudience.flagValue) {
+          if (payload.aud !== validateAudience.textValue) {
+            setErrorMsg('Invalid audience');
+            return;
+          }
+        }
+
+        // validate lifetime
+        if (validateLifetime.flagValue) {
+          const { exp, nbf } = payload;
+          const now = Date.now() / 1000;
+          if (!exp || !nbf || exp >= now || nbf <= now) {
+            setErrorMsg('Invalid lifetime');
+            return;
+          }
+        }
+
+        // validate actor
+        if (validateActor.flagValue) {
+          if (!payload.act) {
+            setErrorMsg('Invalid actor');
+            return;
+          }
+        }
+      }
+      setErrorMsg('');
+    } catch (error: any) {
+      console.log(error);
+      setErrorMsg(error.message);
+    }
+  }, [
+    tokenInput,
+    isEncode,
+    needValidate,
+    secretInput,
+    validateIssuer,
+    validateAudience,
+    validateLifetime,
+    validateActor,
+  ]);
+
+  const setEncoderHeader = () => {
+    headerEncodeRef.current?.setValue(
+      JSON.stringify(
+        {
+          alg: algorithm,
+          typ: 'JWT',
+        },
+        null,
+        4
+      )
+    );
+  };
+
+  useEffect(() => {
+    decodeJwt();
+  }, [decodeJwt]);
 
   useEffect(() => {
     encodeJwt();
   }, [encodeJwt]);
+
+  useEffect(() => {
+    if (isEncode) {
+      headerEncodeRef.current?.updateOptions({ readOnly: false });
+      payloadEncodeRef.current?.updateOptions({ readOnly: false });
+      setEncoderHeader();
+    } else {
+      headerEncodeRef.current?.updateOptions({ readOnly: true });
+      payloadEncodeRef.current?.updateOptions({ readOnly: true });
+    }
+  }, [isEncode]);
 
   return (
     <div className="space-y-5">
@@ -287,6 +490,17 @@ function JwtPage() {
           </div>
         )}
 
+        {/* Token Validation */}
+        {!isEncode && needValidate && (
+          <div>
+            <ShowHideSettings
+              title="Token validation settings"
+              subTitle="Select which token parameters to validate"
+              items={decodeSettings}
+            />
+          </div>
+        )}
+
         {/* Settings */}
         {isEncode && (
           <div>
@@ -319,6 +533,21 @@ function JwtPage() {
           <textarea
             ref={tokenOutputRef}
             readOnly
+            className="w-full h-24 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          ></textarea>
+        </div>
+      )}
+
+      {/* Decoding - Token */}
+      {!isEncode && (
+        <div>
+          <PasteLoadClearBar
+            title="Token"
+            onValueChange={(value) => setTokenInput(value)}
+          />
+          <textarea
+            value={tokenInput}
+            onChange={(e) => setTokenInput(e.target.value)}
             className="w-full h-24 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
           ></textarea>
         </div>
