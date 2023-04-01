@@ -9,7 +9,7 @@ import { useState } from 'react';
 
 export type Props = {
   title: string;
-  subTitle: string;
+  subTitle?: string;
   items: DropdownBoxProps[];
 };
 
@@ -25,7 +25,7 @@ function ShowHideSettings({ title, subTitle, items }: Props) {
         <AdjustmentsHorizontalIcon className="w-6 h-6" />
         <div className="flex flex-col flex-1">
           <span className="text-md">{title}</span>
-          <span className="text-sm">{subTitle}</span>
+          {subTitle && <span className="text-sm">{subTitle}</span>}
         </div>
         <div className="p-2 rounded-md group-hover:bg-slate-300/50">
           <ChevronDownIcon

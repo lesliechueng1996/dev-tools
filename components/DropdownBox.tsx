@@ -19,6 +19,7 @@ export type SwitchDateProp = {
 export type Props = {
   title: string;
   subTitle?: string;
+  description?: string;
   icon: JSX.Element;
   hasItem: boolean;
   type: 'select' | 'switch';
@@ -31,6 +32,7 @@ export type Props = {
 function DropdownBox({
   title,
   subTitle,
+  description,
   icon,
   hasItem,
   type,
@@ -50,7 +52,10 @@ function DropdownBox({
         onClick={() => setExpand(!expand)}
       >
         <div>{icon}</div>
-        <div className="flex-1">{title}</div>
+        <div className="flex-1 flex flex-col">
+          <span className="text-lg">{title}</span>
+          {description && <span className="text-sm">{description}</span>}
+        </div>
         <div>
           {type === 'select' ? (
             <div className="px-3 py-2 shadow border rounded-md">
