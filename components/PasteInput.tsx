@@ -7,6 +7,8 @@ type Props = {
   title: string;
   value: string;
   onValueChange: (value: string) => void;
+  onBlur?: (value: string) => void;
+  onFocus?: (value: string) => void;
   className?: string;
   needClear?: boolean;
 };
@@ -15,6 +17,8 @@ function PasteInput({
   title,
   value,
   onValueChange,
+  onBlur,
+  onFocus,
   className = '',
   needClear = false,
 }: Props) {
@@ -48,6 +52,12 @@ function PasteInput({
             value={value}
             onChange={(e) => {
               onValueChange(e.target.value);
+            }}
+            onBlur={(e) => {
+              onBlur && onBlur(e.target.value);
+            }}
+            onFocus={(e) => {
+              onFocus && onFocus(e.target.value);
             }}
           />
           {needClear && (
