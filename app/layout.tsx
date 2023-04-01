@@ -1,6 +1,7 @@
 import ClientProvider from '@/components/ClientProvider';
 import './globals.css';
 import Menu from '@/components/Menu';
+import DialogProvider from '@/components/DialogProvider';
 
 export const metadata = {
   title: 'Dev Tools',
@@ -15,13 +16,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="">
       <body className="flex min-w-min">
-        <aside className="w-1/4 bg-slate-200 dark:bg-slate-900 h-screen min-w-min overflow-y-auto">
-          <Menu />
-        </aside>
-        <main className="flex-1 bg-slate-50 h-screen overflow-y-auto px-10 py-5">
-          {children}
-        </main>
-        <ClientProvider />
+        <DialogProvider>
+          <aside className="w-1/4 bg-slate-200 dark:bg-slate-900 h-screen min-w-min overflow-y-auto">
+            <Menu />
+          </aside>
+          <main className="flex-1 bg-slate-50 h-screen overflow-y-auto px-10 py-5">
+            {children}
+          </main>
+          <ClientProvider />
+        </DialogProvider>
       </body>
     </html>
   );
