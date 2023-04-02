@@ -1,5 +1,6 @@
 import {
   ClipboardDocumentCheckIcon,
+  DocumentDuplicateIcon,
   DocumentIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -8,9 +9,16 @@ import { useRef } from 'react';
 type Props = {
   title: string;
   onValueChange: (text: string) => void;
+  withCopy?: boolean;
+  onCopy?: () => void;
 };
 
-function PasteLoadClearBar({ title, onValueChange }: Props) {
+function PasteLoadClearBar({
+  title,
+  onValueChange,
+  withCopy = false,
+  onCopy,
+}: Props) {
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const chooseFile = () => {
@@ -70,6 +78,16 @@ function PasteLoadClearBar({ title, onValueChange }: Props) {
             onChange={onChangeFile}
           />
         </button>
+        {withCopy && (
+          <button
+            className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+            title="Copy"
+            onClick={onCopy}
+          >
+            <DocumentDuplicateIcon className="w-6 h-6" />
+            Copy
+          </button>
+        )}
         <button
           className="bg-white rounded-md px-3 py-2 shadow"
           title="Clear"
