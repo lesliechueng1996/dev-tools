@@ -61,6 +61,8 @@ function LoremIpsumPage() {
         lines[0] = newFirstLine;
         outputRef.current && (outputRef.current.value = lines.join('\n'));
       }
+    } else {
+      outputRef.current && (outputRef.current.value = text);
     }
   };
 
