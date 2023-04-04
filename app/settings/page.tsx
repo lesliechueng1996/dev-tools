@@ -1,13 +1,5 @@
-// import Switch from "react-switch";
-
 function SettingsPage() {
-  return (
-    <div>
-      <div>
-        <div>{/* <Switch checked={false} onChange={() => {}}  /> */}</div>
-      </div>
-    </div>
-  );
+  return <div>No Settings</div>;
 }
 
 export default SettingsPage;

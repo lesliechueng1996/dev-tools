@@ -1,16 +1,25 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import MenuRow from './MenuRow';
 import AllToolsSvg from '@/components/icons/AllToolsSvg';
-import menuData from '@/data';
+import menuData, { filterDataByIds } from '@/data';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Suggestion from './Suggestion';
+import { useFavorite } from './FavoriteProvider';
 
 function Menu() {
   const [menus, setMenus] = useState<MenuItem[]>([...menuData]);
+  const { favorites } = useFavorite();
+  const [favoritesMenus, setFavoritesMenus] = useState<MenuItem[]>(() => {
+    return filterDataByIds(favorites);
+  });
+
+  useEffect(() => {
+    setFavoritesMenus(filterDataByIds(favorites));
+  }, [favorites]);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -85,6 +94,18 @@ function Menu() {
               isActive={pathname === '/'}
             />
           </Link>
+
+          {favoritesMenus.map((item) => (
+            <Link href={item.link ?? '/'} key={item.id}>
+              <MenuRow
+                id={item.id}
+                icon={item.icon}
+                label={item.label}
+                isLeaf={true}
+                isActive={false}
+              />
+            </Link>
+          ))}
         </div>
 
         <div className="border-t-2 border-t-gray-300/50 dark:border-t-white/20 px-2 pt-2">

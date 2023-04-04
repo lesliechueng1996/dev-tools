@@ -1,5 +1,5 @@
 function XmlValidatorPage() {
-  return <div>XmlValidatorPage</div>;
+  return <div>Not Support Yet</div>;
 }
 
 export default XmlValidatorPage;

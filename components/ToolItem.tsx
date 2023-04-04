@@ -7,9 +7,11 @@ import {
   BookmarkSlashIcon,
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import { useFavorite } from './FavoriteProvider';
 
 function ToolItem({ tool }: { tool: MenuItem }) {
   const router = useRouter();
+  const { favorites, addToFavorite, removeFromFavorite } = useFavorite();
 
   return (
     <div
@@ -29,14 +31,30 @@ function ToolItem({ tool }: { tool: MenuItem }) {
         <Square2StackIcon
           className="h-6 w-6 cursor-pointer"
           title="Open in a new window"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             window.open(tool.link);
           }}
         />
-        <BookmarkIcon
-          className="h-6 w-6 cursor-pointer"
-          title="Add to favorites"
-        />
+        {favorites.includes(tool.id) ? (
+          <BookmarkSlashIcon
+            className="h-6 w-6 cursor-pointer"
+            title="Remove from favorites"
+            onClick={(e) => {
+              e.stopPropagation();
+              removeFromFavorite(tool.id);
+            }}
+          />
+        ) : (
+          <BookmarkIcon
+            className="h-6 w-6 cursor-pointer"
+            title="Add to favorites"
+            onClick={(e) => {
+              e.stopPropagation();
+              addToFavorite(tool.id);
+            }}
+          />
+        )}
       </div>
     </div>
   );
