@@ -47,7 +47,7 @@ export default function FavoriteProvider({ children }: Props) {
     favoriteReducer,
     [] as string[],
     (arg) => {
-      const favorites = localStorage.getItem('favorites');
+      const favorites = window.localStorage.getItem('favorites');
       return favorites ? JSON.parse(favorites) : arg;
     }
   );

@@ -2,7 +2,12 @@ import ClientProvider from '@/components/ClientProvider';
 import './globals.css';
 import Menu from '@/components/Menu';
 import DialogProvider from '@/components/DialogProvider';
-import FavoriteProvider from '@/components/FavoriteProvider';
+import dynamic from 'next/dynamic';
+// import FavoriteProvider from '@/components/FavoriteProvider';
+const FavoriteProvider = dynamic(
+  () => import('@/components/FavoriteProvider'),
+  { ssr: false }
+);
 
 export const metadata = {
   title: 'Dev Tools',

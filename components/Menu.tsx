@@ -144,7 +144,7 @@ function Menu() {
         </div>
       </div>
 
-      <Link href="/settings">
+      {/* <Link href="/settings">
         <div className="pl-1.5 pb-5 cursor-pointer">
           <div className="flex items-center pl-8 gap-5 text-lg">
             <div>
@@ -153,7 +153,7 @@ function Menu() {
             <div>Settings</div>
           </div>
         </div>
-      </Link>
+      </Link> */}
     </div>
   );
 }
