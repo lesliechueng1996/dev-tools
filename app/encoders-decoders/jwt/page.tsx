@@ -9,17 +9,17 @@ import {
   FingerPrintIcon,
   LightBulbIcon,
   ClockIcon,
-  DocumentDuplicateIcon,
   CheckBadgeIcon,
 } from '@heroicons/react/24/outline';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Switch from 'react-switch';
 import { SwitchDateProp, SwitchValueProp } from '@/components/DropdownBox';
 import TipBlock from '@/components/TipBlock';
 import PasteLoadClearBar from '@/components/PasteLoadClearBar';
 import Editor, { OnMount } from '@monaco-editor/react';
 import * as jose from 'jose';
 import dayjs from 'dayjs';
+import SwitchSetting from '@/components/SwitchSetting';
+import CopyBar from '@/components/CopyBar';
 
 type Settings = ShowHideSettingsProps['items'];
 type Editor = Parameters<OnMount>[0];
@@ -209,13 +209,6 @@ function JwtPage() {
       },
     },
   ];
-
-  const writeClipboard = () => {
-    const clipboard = navigator.clipboard;
-    if (clipboard) {
-      clipboard.writeText(tokenOutputRef.current!.value);
-    }
-  };
 
   const handleHeaderEditorMount = (editor: Editor) => {
     editor.updateOptions({ minimap: { enabled: false }, readOnly: !isEncode });
@@ -449,68 +442,50 @@ function JwtPage() {
 
       <div>
         <h2>Configuration</h2>
+        <div className="space-y-3">
+          {/* Encode / Decode */}
+          <SwitchSetting
+            Icon={ArrowsRightLeftIcon}
+            value={isEncode}
+            onChange={(checked) => setIsEncode(checked)}
+            title="Encode / Decode"
+            trueValue="Encode"
+            falseValue="Decode"
+          />
 
-        {/* Encode / Decode */}
-        <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20 mb-3">
-          <div>
-            <ArrowsRightLeftIcon className="w-6 h-6" />
-          </div>
-          <span className="flex-1">Encode / Decode</span>
-          <div>{isEncode ? 'Encode' : 'Decode'}</div>
-          <div>
-            <Switch
-              checked={isEncode}
-              onChange={(checked) => {
-                setIsEncode(checked);
-              }}
-              checkedIcon={false}
-              uncheckedIcon={false}
-              onColor="#0369A1"
+          {!isEncode && (
+            <SwitchSetting
+              Icon={CheckCircleIcon}
+              value={needValidate}
+              onChange={(checked) => setNeedValidate(checked)}
+              title="Validate Token"
+              trueValue="Yes"
+              falseValue="No"
             />
-          </div>
-        </div>
-        {!isEncode && (
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20 mb-3">
+          )}
+
+          {/* Token Validation */}
+          {!isEncode && needValidate && (
             <div>
-              <CheckCircleIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Validate Token</span>
-            <div>{needValidate ? 'Yes' : 'No'}</div>
-            <div>
-              <Switch
-                checked={needValidate}
-                onChange={(checked) => {
-                  setNeedValidate(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
+              <ShowHideSettings
+                title="Token validation settings"
+                subTitle="Select which token parameters to validate"
+                items={decodeSettings}
               />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Token Validation */}
-        {!isEncode && needValidate && (
-          <div>
-            <ShowHideSettings
-              title="Token validation settings"
-              subTitle="Select which token parameters to validate"
-              items={decodeSettings}
-            />
-          </div>
-        )}
-
-        {/* Settings */}
-        {isEncode && (
-          <div>
-            <ShowHideSettings
-              title="Settings"
-              subTitle="Select token parameters"
-              items={encodeSettings}
-            />
-          </div>
-        )}
+          {/* Settings */}
+          {isEncode && (
+            <div>
+              <ShowHideSettings
+                title="Settings"
+                subTitle="Select token parameters"
+                items={encodeSettings}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Error Tip */}
@@ -519,17 +494,10 @@ function JwtPage() {
       {/* Encoding - Token */}
       {isEncode && (
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2>Token</h2>
-            <button
-              className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-              title="Copy"
-              onClick={writeClipboard}
-            >
-              <DocumentDuplicateIcon className="w-6 h-6" />
-              Copy
-            </button>
-          </div>
+          <CopyBar
+            title="Token"
+            getNeedCopyText={() => tokenOutputRef.current!.value}
+          />
           <textarea
             ref={tokenOutputRef}
             readOnly

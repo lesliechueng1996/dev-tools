@@ -3,14 +3,13 @@
 import {
   Bars3BottomRightIcon,
   ArrowsUpDownIcon,
-  ClipboardDocumentCheckIcon,
-  DocumentIcon,
-  XMarkIcon,
-  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
 import { useEffect, useRef, useState } from 'react';
-import Switch from 'react-switch';
 import Editor, { OnMount } from '@monaco-editor/react';
+import SelectSetting from '@/components/SelectSetting';
+import SwitchSetting from '@/components/SwitchSetting';
+import PasteLoadClearBar from '@/components/PasteLoadClearBar';
+import CopyBar from '@/components/CopyBar';
 
 const options = ['2 spaces', '4 spaces', '1 tab', 'Minified'];
 
@@ -20,55 +19,12 @@ function XmlPage() {
   const [needNewline, setNeedNewline] = useState(false);
   const editorRef = useRef<Editor>(null);
   const outputEditorRef = useRef<Editor>(null);
-  const inputFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (editorRef.current) {
       handleEditorChange(editorRef.current.getValue());
     }
   }, [indentation, needNewline]);
-
-  const writeClipboard = () => {
-    const clipboard = navigator.clipboard;
-    if (clipboard) {
-      clipboard.writeText(outputEditorRef.current.getValue());
-    }
-  };
-
-  const clearInput = () => {
-    editorRef.current.setValue('');
-  };
-
-  const readClipboard = () => {
-    const clipboard = navigator.clipboard;
-    if (clipboard) {
-      navigator.clipboard.readText().then((text) => {
-        editorRef.current.setValue(text);
-      });
-    }
-  };
-
-  const chooseFile = () => {
-    if (inputFileRef.current) {
-      inputFileRef.current.click();
-    }
-  };
-
-  const onChangeFile = () => {
-    if (inputFileRef.current && inputFileRef.current.files) {
-      const file = inputFileRef.current.files[0];
-      const reader = new FileReader();
-
-      reader.addEventListener('load', () => {
-        const fileContent = reader.result as string;
-        editorRef.current.setValue(fileContent);
-      });
-
-      reader.readAsText(file);
-
-      inputFileRef.current.value = '';
-    }
-  };
 
   const handleInputEditorMount = (editor: Editor) => {
     editor.updateOptions({ minimap: { enabled: false } });
@@ -165,80 +121,32 @@ function XmlPage() {
       <div>
         <h2>Configuration</h2>
         <div className="space-y-3">
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <Bars3BottomRightIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Indentation</span>
-            <div className="px-3 py-2 shadow border rounded-md">
-              <select
-                value={indentation}
-                onChange={(e) => setIndentation(e.target.value)}
-              >
-                {options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <ArrowsUpDownIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Put attributes on new line</span>
-            <div>{needNewline ? 'On' : 'Off'}</div>
-            <div>
-              <Switch
-                checked={needNewline}
-                onChange={(checked) => {
-                  setNeedNewline(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
-              />
-            </div>
-          </div>
+          <SelectSetting
+            Icon={Bars3BottomRightIcon}
+            value={indentation}
+            onChange={(value) => setIndentation(value)}
+            title="Indentation"
+            options={options}
+          />
+
+          <SwitchSetting
+            Icon={ArrowsUpDownIcon}
+            value={needNewline}
+            onChange={(checked) => {
+              setNeedNewline(checked);
+            }}
+            title="Put attributes on new line"
+            trueValue="On"
+            falseValue="Off"
+          />
         </div>
       </div>
       <div className="flex gap-5 flex-1">
         <div className="flex-1 flex flex-col">
-          <div className="flex justify-between items-baseline mb-3">
-            <h2>Input</h2>
-            <div className="flex gap-3">
-              <button
-                className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-                title="Paste"
-                onClick={readClipboard}
-              >
-                <ClipboardDocumentCheckIcon className="w-6 h-6" />
-                Paste
-              </button>
-              <button
-                className="bg-white rounded-md px-3 py-2 shadow"
-                title="Load a file"
-                onClick={chooseFile}
-              >
-                <DocumentIcon className="w-6 h-6" />
-                <input
-                  type="file"
-                  accept="text/*"
-                  className="hidden"
-                  ref={inputFileRef}
-                  onChange={onChangeFile}
-                />
-              </button>
-              <button
-                className="bg-white rounded-md px-3 py-2 shadow"
-                title="Clear"
-                onClick={clearInput}
-              >
-                <XMarkIcon className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
+          <PasteLoadClearBar
+            title="Input"
+            onValueChange={(value) => editorRef.current.setValue(value)}
+          />
           <div className="bg-white rounded-md border shadow flex-1">
             <Editor
               defaultLanguage="xml"
@@ -248,19 +156,10 @@ function XmlPage() {
           </div>
         </div>
         <div className="flex-1 flex flex-col">
-          <div className="flex justify-between items-baseline mb-3">
-            <h2>Output</h2>
-            <div>
-              <button
-                className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-                title="Copy"
-                onClick={writeClipboard}
-              >
-                <DocumentDuplicateIcon className="w-6 h-6" />
-                Copy
-              </button>
-            </div>
-          </div>
+          <CopyBar
+            title="Output"
+            getNeedCopyText={() => outputEditorRef.current.getValue()}
+          />
           <div className="bg-white rounded-md border shadow flex-1">
             <Editor defaultLanguage="xml" onMount={handleOutputEditorMount} />
           </div>

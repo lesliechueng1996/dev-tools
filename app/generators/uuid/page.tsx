@@ -1,5 +1,7 @@
 'use client';
 
+import SelectSetting from '@/components/SelectSetting';
+import SwitchSetting from '@/components/SwitchSetting';
 import {
   AdjustmentsHorizontalIcon,
   DocumentDuplicateIcon,
@@ -8,7 +10,6 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useRef, useState } from 'react';
-import Switch from 'react-switch';
 import { v1, v4 } from 'uuid';
 
 const versionList = ['1', '4 (GUID)'];
@@ -51,65 +52,36 @@ function UuidPage() {
       <div>
         <h2>Configuration</h2>
         <div className="space-y-3">
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <MinusIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Hyphens</span>
-            <div>{useHyphen ? 'On' : 'Off'}</div>
-            <div>
-              <Switch
-                checked={useHyphen}
-                onChange={(checked) => {
-                  setUseHyphen(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
-              />
-            </div>
-          </div>
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <LanguageIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Uppercase</span>
-            <div>{useUppercase ? 'On' : 'Off'}</div>
-            <div>
-              <Switch
-                checked={useUppercase}
-                onChange={(checked) => {
-                  setUseUppercase(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
-              />
-            </div>
-          </div>
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <AdjustmentsHorizontalIcon className="w-6 h-6" />
-            </div>
-            <div className="flex flex-col justify-start flex-1">
-              <span className="text-lg">UUID version</span>
-              <span className="text-xs">
-                Choose the version of UUID to generate
-              </span>
-            </div>
-            <div className="px-3 py-2 shadow border rounded-md">
-              <select
-                value={version}
-                onChange={(e) => setVersion(e.target.value)}
-              >
-                {versionList.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <SwitchSetting
+            Icon={MinusIcon}
+            value={useHyphen}
+            onChange={(checked) => {
+              setUseHyphen(checked);
+            }}
+            title="Hyphens"
+            trueValue="On"
+            falseValue="Off"
+          />
+
+          <SwitchSetting
+            Icon={LanguageIcon}
+            value={useUppercase}
+            onChange={(checked) => {
+              setUseUppercase(checked);
+            }}
+            title="Uppercase"
+            trueValue="On"
+            falseValue="Off"
+          />
+
+          <SelectSetting
+            Icon={AdjustmentsHorizontalIcon}
+            value={version}
+            onChange={(value) => setVersion(value)}
+            title="UUID version"
+            subTitle="Choose the version of UUID to generate"
+            options={versionList}
+          />
         </div>
       </div>
 

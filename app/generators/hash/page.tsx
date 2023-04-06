@@ -5,13 +5,8 @@ import {
   LanguageIcon,
   AdjustmentsHorizontalIcon,
   InboxIcon,
-  ClipboardDocumentCheckIcon,
-  DocumentIcon,
-  XMarkIcon,
-  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
 import { useEffect, useRef, useState } from 'react';
-import Switch from 'react-switch';
 import HAMC_MD5 from 'crypto-js/hmac-md5';
 import HAMC_SHA1 from 'crypto-js/hmac-sha1';
 import HAMC_SHA256 from 'crypto-js/hmac-sha256';
@@ -22,6 +17,10 @@ import SHA256 from 'crypto-js/sha256';
 import SHA512 from 'crypto-js/sha512';
 import HEX from 'crypto-js/enc-hex';
 import BASE64 from 'crypto-js/enc-base64';
+import SwitchSetting from '@/components/SwitchSetting';
+import SelectSetting from '@/components/SelectSetting';
+import PasteLoadClearBar from '@/components/PasteLoadClearBar';
+import CopyInput from '@/components/CopyInput';
 
 const options = ['Hex', 'Base64'];
 
@@ -37,7 +36,6 @@ function HashPage() {
   const [outputType, setOutputType] = useState(options[0]);
   const [useHMAC, setUseHMAC] = useState(false);
   const [input, setInput] = useState('');
-  const inputFileRef = useRef<HTMLInputElement>(null);
 
   const [secret, setSecret] = useState('');
   const inputSecretFileRef = useRef<HTMLInputElement>(null);
@@ -52,6 +50,9 @@ function HashPage() {
 
   useEffect(() => {
     const encodeHelper = getEncodeHelper(outputType);
+    if (!realInput) {
+      return;
+    }
     if (!useHMAC) {
       const md5Value = encodeHelper.stringify(MD5(realInput));
       const sha1Value = encodeHelper.stringify(SHA1(realInput));
@@ -89,68 +90,6 @@ function HashPage() {
     }
   }, [realInput, outputType, isUppercase, useHMAC, realSecret]);
 
-  const readClipboard = () => {
-    const clipboard = navigator.clipboard;
-    if (clipboard) {
-      navigator.clipboard.readText().then((text) => {
-        setInput(text);
-      });
-    }
-  };
-
-  const chooseFile = () => {
-    if (inputFileRef.current) {
-      inputFileRef.current.click();
-    }
-  };
-
-  const onChangeFile = () => {
-    if (inputFileRef.current && inputFileRef.current.files) {
-      const file = inputFileRef.current.files[0];
-      const reader = new FileReader();
-
-      reader.addEventListener('load', () => {
-        const fileContent = reader.result as string;
-        setInput(fileContent);
-      });
-
-      reader.readAsText(file);
-
-      inputFileRef.current.value = '';
-    }
-  };
-
-  const readSecretClipboard = () => {
-    const clipboard = navigator.clipboard;
-    if (clipboard) {
-      navigator.clipboard.readText().then((text) => {
-        setSecret(text);
-      });
-    }
-  };
-
-  const chooseFileForSecret = () => {
-    if (inputSecretFileRef.current) {
-      inputSecretFileRef.current.click();
-    }
-  };
-
-  const onSecretChangeFile = () => {
-    if (inputSecretFileRef.current && inputSecretFileRef.current.files) {
-      const file = inputSecretFileRef.current.files[0];
-      const reader = new FileReader();
-
-      reader.addEventListener('load', () => {
-        const fileContent = reader.result as string;
-        setSecret(fileContent);
-      });
-
-      reader.readAsText(file);
-
-      inputSecretFileRef.current.value = '';
-    }
-  };
-
   return (
     <div className="space-y-5">
       <h1 className="text-3xl">Hash Generator</h1>
@@ -158,98 +97,39 @@ function HashPage() {
       <div>
         <h2>Configuration</h2>
         <div className="space-y-3">
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <LanguageIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Uppercase</span>
-            <div>{isUppercase ? 'On' : 'Off'}</div>
-            <div>
-              <Switch
-                checked={isUppercase}
-                onChange={(checked) => {
-                  setIsUppercase(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
-              />
-            </div>
-          </div>
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <AdjustmentsHorizontalIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Output Type</span>
-            <div className="px-3 py-2 shadow border rounded-md">
-              <select
-                value={outputType}
-                onChange={(e) => setOutputType(e.target.value)}
-              >
-                {options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <InboxIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">HMAC Mode</span>
-            <div>{useHMAC ? 'On' : 'Off'}</div>
-            <div>
-              <Switch
-                checked={useHMAC}
-                onChange={(checked) => {
-                  setUseHMAC(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
-              />
-            </div>
-          </div>
+          <SwitchSetting
+            Icon={LanguageIcon}
+            value={isUppercase}
+            onChange={(checked) => setIsUppercase(checked)}
+            title="Uppercase"
+            trueValue="On"
+            falseValue="Off"
+          />
+
+          <SelectSetting
+            Icon={AdjustmentsHorizontalIcon}
+            value={outputType}
+            onChange={(value) => setOutputType(value)}
+            title="Output Type"
+            options={options}
+          />
+
+          <SwitchSetting
+            Icon={InboxIcon}
+            value={useHMAC}
+            onChange={(checked) => setUseHMAC(checked)}
+            title="HMAC Mode"
+            trueValue="On"
+            falseValue="Off"
+          />
         </div>
       </div>
 
       <div>
-        <div className="flex justify-between items-baseline mb-3">
-          <h2>Input</h2>
-          <div className="flex gap-3">
-            <button
-              className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-              title="Paste"
-              onClick={readClipboard}
-            >
-              <ClipboardDocumentCheckIcon className="w-6 h-6" />
-              Paste
-            </button>
-            <button
-              className="bg-white rounded-md px-3 py-2 shadow"
-              title="Load a file"
-              onClick={chooseFile}
-            >
-              <DocumentIcon className="w-6 h-6" />
-              <input
-                type="file"
-                accept="text/*"
-                className="hidden"
-                ref={inputFileRef}
-                onChange={onChangeFile}
-              />
-            </button>
-            <button
-              className="bg-white rounded-md px-3 py-2 shadow"
-              title="Clear"
-              onClick={() => setInput('')}
-            >
-              <XMarkIcon className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
+        <PasteLoadClearBar
+          title="Input"
+          onValueChange={(value) => setInput(value)}
+        />
         <textarea
           className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
           value={input}
@@ -259,40 +139,10 @@ function HashPage() {
 
       {useHMAC && (
         <div>
-          <div className="flex justify-between items-baseline mb-3">
-            <h2>Secret Key</h2>
-            <div className="flex gap-3">
-              <button
-                className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-                title="Paste"
-                onClick={readSecretClipboard}
-              >
-                <ClipboardDocumentCheckIcon className="w-6 h-6" />
-                Paste
-              </button>
-              <button
-                className="bg-white rounded-md px-3 py-2 shadow"
-                title="Load a file"
-                onClick={chooseFileForSecret}
-              >
-                <DocumentIcon className="w-6 h-6" />
-                <input
-                  type="file"
-                  accept="text/*"
-                  className="hidden"
-                  ref={inputSecretFileRef}
-                  onChange={onSecretChangeFile}
-                />
-              </button>
-              <button
-                className="bg-white rounded-md px-3 py-2 shadow"
-                title="Clear"
-                onClick={() => setSecret('')}
-              >
-                <XMarkIcon className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
+          <PasteLoadClearBar
+            title="Secret Key"
+            onValueChange={(value) => setSecret(value)}
+          />
           <textarea
             className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
             value={secret}
@@ -301,58 +151,10 @@ function HashPage() {
         </div>
       )}
 
-      <div>
-        <h2>MD5</h2>
-        <div className="flex items-center gap-3">
-          <input
-            className="flex-1 border shadow rounded-md outline-none px-3 py-2"
-            value={md5}
-            readOnly
-          />
-          <button className="shadow border rounded-md py-2 px-3 bg-white">
-            <DocumentDuplicateIcon className="w-6 h-6" />
-          </button>
-        </div>
-      </div>
-      <div>
-        <h2>SHA1</h2>
-        <div className="flex items-center gap-3">
-          <input
-            className="flex-1 border shadow rounded-md outline-none px-3 py-2"
-            value={sha1}
-            readOnly
-          />
-          <button className="shadow border rounded-md py-2 px-3 bg-white">
-            <DocumentDuplicateIcon className="w-6 h-6" />
-          </button>
-        </div>
-      </div>
-      <div>
-        <h2>SHA256</h2>
-        <div className="flex items-center gap-3">
-          <input
-            className="flex-1 border shadow rounded-md outline-none px-3 py-2"
-            value={sha256}
-            readOnly
-          />
-          <button className="shadow border rounded-md py-2 px-3 bg-white">
-            <DocumentDuplicateIcon className="w-6 h-6" />
-          </button>
-        </div>
-      </div>
-      <div>
-        <h2>SHA512</h2>
-        <div className="flex items-center gap-3">
-          <input
-            className="flex-1 border shadow rounded-md outline-none px-3 py-2"
-            value={sha512}
-            readOnly
-          />
-          <button className="shadow border rounded-md py-2 px-3 bg-white">
-            <DocumentDuplicateIcon className="w-6 h-6" />
-          </button>
-        </div>
-      </div>
+      <CopyInput title="MD5" value={md5} />
+      <CopyInput title="SHA1" value={sha1} />
+      <CopyInput title="SHA256" value={sha256} />
+      <CopyInput title="SHA512" value={sha512} />
     </div>
   );
 }

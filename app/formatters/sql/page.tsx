@@ -1,10 +1,11 @@
 'use client';
 
+import CopyBar from '@/components/CopyBar';
 import PasteLoadClearBar from '@/components/PasteLoadClearBar';
+import SelectSetting from '@/components/SelectSetting';
 import {
   Bars3BottomRightIcon,
   CodeBracketIcon,
-  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
 import Editor, { OnMount } from '@monaco-editor/react';
 import { useEffect, useRef, useState } from 'react';
@@ -64,13 +65,6 @@ function SqlPage() {
   const editorRef = useRef<Editor>(null);
   const outputEditorRef = useRef<Editor>(null);
 
-  const writeClipboard = () => {
-    const clipboard = navigator.clipboard;
-    if (clipboard) {
-      clipboard.writeText(outputEditorRef.current.getValue());
-    }
-  };
-
   const getIndentaiorFromText = () => {
     switch (indentation) {
       case '2 spaces':
@@ -124,44 +118,25 @@ function SqlPage() {
       <div>
         <h2>Configuration</h2>
         <div className="space-y-3">
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <CodeBracketIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Language</span>
-            <div className="px-3 py-2 shadow border rounded-md">
-              <select
-                value={sqlType}
-                onChange={(e) => setSqlType(e.target.value)}
-              >
-                {sqlOptions.map((option) => (
-                  <option key={option.key} value={option.key}>
-                    {option.value}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-              <div>
-                <Bars3BottomRightIcon className="w-6 h-6" />
-              </div>
-              <span className="flex-1">Indentation</span>
-              <div className="px-3 py-2 shadow border rounded-md">
-                <select
-                  value={indentation}
-                  onChange={(e) => setIndentation(e.target.value)}
-                >
-                  {options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
+          <SelectSetting
+            Icon={CodeBracketIcon}
+            value={sqlType}
+            onChange={(value) => {
+              setSqlType(value);
+            }}
+            title="Language"
+            keyValueOptions={sqlOptions}
+          />
+
+          <SelectSetting
+            Icon={Bars3BottomRightIcon}
+            value={indentation}
+            onChange={(value) => {
+              setIndentation(value);
+            }}
+            title="Indentation"
+            options={options}
+          />
         </div>
       </div>
 
@@ -180,17 +155,10 @@ function SqlPage() {
           </div>
         </div>
         <div className="flex-1 flex flex-col">
-          <div className="flex justify-between items-baseline mb-3">
-            <h2>Output</h2>
-            <button
-              className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-              title="Copy"
-              onClick={writeClipboard}
-            >
-              <DocumentDuplicateIcon className="w-6 h-6" />
-              Copy
-            </button>
-          </div>
+          <CopyBar
+            title="Output"
+            getNeedCopyText={() => outputEditorRef.current.getValue()}
+          />
           <div className="bg-white rounded-md border shadow flex-1">
             <Editor defaultLanguage="sql" onMount={handleOutputEditorMount} />
           </div>

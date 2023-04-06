@@ -28,7 +28,7 @@ function MenuRow({
       <div
         className={`${
           isActive ? 'bg-sky-600 dark:bg-cyan-400' : 'bg-transparent'
-        } w-1.5 rounded-lg`}
+        } w-1.5 rounded-lg transition-all duration-300`}
       ></div>
       <div className="flex flex-1 px-5 items-center justify-between">
         <div className="flex gap-5 items-center">

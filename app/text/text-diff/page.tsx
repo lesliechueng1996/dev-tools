@@ -1,10 +1,10 @@
 'use client';
 
 import PasteFileEditor from '@/components/PasteFileEditor';
+import SwitchSetting from '@/components/SwitchSetting';
 import { CodeBracketSquareIcon } from '@heroicons/react/24/outline';
 import { DiffEditor, OnMount } from '@monaco-editor/react';
 import { useEffect, useRef, useState } from 'react';
-import Switch from 'react-switch';
 
 type DiffEditor = Parameters<OnMount>[0];
 
@@ -31,24 +31,14 @@ function TextDiffPage() {
 
       <div>
         <h2>Configuration</h2>
-        <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-          <div>
-            <CodeBracketSquareIcon className="w-6 h-6" />
-          </div>
-          <span className="flex-1">Inline Mode</span>
-          <div>{inlineMode ? 'On' : 'Off'}</div>
-          <div>
-            <Switch
-              checked={inlineMode}
-              onChange={(checked) => {
-                setInlineMode(checked);
-              }}
-              checkedIcon={false}
-              uncheckedIcon={false}
-              onColor="#0369A1"
-            />
-          </div>
-        </div>
+        <SwitchSetting
+          Icon={CodeBracketSquareIcon}
+          value={inlineMode}
+          onChange={(checked) => setInlineMode(checked)}
+          title="Inline Mode"
+          trueValue="On"
+          falseValue="Off"
+        />
       </div>
 
       <div className="flex gap-5 flex-1">

@@ -1,6 +1,7 @@
 'use client';
 
 import DragDropFile from '@/components/DragDropFile';
+import SelectSetting from '@/components/SelectSetting';
 import {
   ArrowsRightLeftIcon,
   TrashIcon,
@@ -91,24 +92,14 @@ function ImageConverter() {
 
       <div>
         <h2>Configuration</h2>
-        <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-          <div>
-            <ArrowsRightLeftIcon className="w-6 h-6" />
-          </div>
-          <div className="flex flex-col justify-start flex-1">
-            <span className="text-lg">Conversion</span>
-            <span className="text-xs">Select the converted file format</span>
-          </div>
-          <div className="px-3 py-2 shadow border rounded-md">
-            <select value={type} onChange={(e) => setType(e.target.value)}>
-              {imageType.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <SelectSetting
+          Icon={ArrowsRightLeftIcon}
+          value={type}
+          onChange={(value) => setType(value)}
+          title="Conversion"
+          subTitle="Select the converted file format"
+          options={imageType}
+        />
       </div>
 
       <DragDropFile

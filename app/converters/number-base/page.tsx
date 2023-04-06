@@ -1,16 +1,17 @@
 'use client';
 
+import CopyInput from '@/components/CopyInput';
 import PasteInput from '@/components/PasteInput';
+import SelectSetting from '@/components/SelectSetting';
+import SwitchSetting from '@/components/SwitchSetting';
 import TipBlock from '@/components/TipBlock';
 import {
   LanguageIcon,
   CubeTransparentIcon,
   ChevronRightIcon,
   ChevronLeftIcon,
-  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
-import Switch from 'react-switch';
 import { base16, base32, base32hex, base64, base64url } from 'rfc4648';
 
 const dictionary = [
@@ -131,42 +132,22 @@ function NumberBasePage() {
       <div>
         <h2>Configuration</h2>
         <div className="space-y-3">
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <LanguageIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Format number</span>
-            <div>{useFormat ? 'On' : 'Off'}</div>
-            <div>
-              <Switch
-                checked={useFormat}
-                onChange={(checked) => {
-                  setUseFormat(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
-              />
-            </div>
-          </div>
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <CubeTransparentIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Advanced mode</span>
-            <div>{useAdvanced ? 'On' : 'Off'}</div>
-            <div>
-              <Switch
-                checked={useAdvanced}
-                onChange={(checked) => {
-                  setUseAdvanced(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
-              />
-            </div>
-          </div>
+          <SwitchSetting
+            Icon={LanguageIcon}
+            value={useFormat}
+            onChange={(checked) => setUseFormat(checked)}
+            title="Format number"
+            trueValue="On"
+            falseValue="Off"
+          />
+          <SwitchSetting
+            Icon={CubeTransparentIcon}
+            value={useAdvanced}
+            onChange={(checked) => setUseAdvanced(checked)}
+            title="Advanced mode"
+            trueValue="On"
+            falseValue="Off"
+          />
         </div>
       </div>
 
@@ -301,24 +282,14 @@ function NumberBasePage() {
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <ChevronRightIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Input dictionary</span>
-            <div className="px-3 py-2 shadow border rounded-md">
-              <select
-                value={inputType}
-                onChange={(e) => setInputType(e.target.value)}
-              >
-                {dictionary.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <SelectSetting
+            Icon={ChevronRightIcon}
+            value={inputType}
+            onChange={(value) => setInputType(value)}
+            title="Input dictionary"
+            options={dictionary}
+          />
+
           <PasteInput
             title="Input"
             value={advancedInput}
@@ -326,41 +297,15 @@ function NumberBasePage() {
             className="-mx-3"
           />
 
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <ChevronLeftIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">Output dictionary</span>
-            <div className="px-3 py-2 shadow border rounded-md">
-              <select
-                value={outputType}
-                onChange={(e) => setOutputType(e.target.value)}
-              >
-                {dictionary.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div>
-            <h2>Output</h2>
-            <div className="flex gap-3">
-              <input
-                className="w-full outline-none py-1 px-2 rounded-sm shadow border"
-                type="text"
-                value={advancedOutput}
-                readOnly
-              />
-              <button
-                className="bg-white rounded-md shadow border p-2"
-                title="Copy"
-              >
-                <DocumentDuplicateIcon className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
+          <SelectSetting
+            Icon={ChevronLeftIcon}
+            value={outputType}
+            onChange={(value) => setOutputType(value)}
+            title="Output dictionary"
+            options={dictionary}
+          />
+
+          <CopyInput title="Output" value={advancedOutput} />
         </div>
       )}
     </div>

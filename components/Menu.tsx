@@ -109,7 +109,7 @@ function Menu() {
                 icon={item.icon}
                 label={item.label}
                 isLeaf={true}
-                isActive={false}
+                isActive={pathNameWithoutBase === item.link}
               />
             </Link>
           ))}

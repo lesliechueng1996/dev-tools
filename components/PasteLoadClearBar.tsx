@@ -10,14 +10,14 @@ type Props = {
   title: string;
   onValueChange: (text: string) => void;
   withCopy?: boolean;
-  onCopy?: () => void;
+  getNeedCopyText?: () => void;
 };
 
 function PasteLoadClearBar({
   title,
   onValueChange,
   withCopy = false,
-  onCopy,
+  getNeedCopyText,
 }: Props) {
   const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -52,6 +52,14 @@ function PasteLoadClearBar({
     }
   };
 
+  const writeClipboard = () => {
+    const clipboard = navigator.clipboard;
+    const text = getNeedCopyText && getNeedCopyText();
+    if (clipboard && text) {
+      clipboard.writeText(text);
+    }
+  };
+
   return (
     <div className="flex justify-between items-baseline mb-3">
       <h2>{title}</h2>
@@ -82,7 +90,7 @@ function PasteLoadClearBar({
           <button
             className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
             title="Copy"
-            onClick={onCopy}
+            onClick={writeClipboard}
           >
             <DocumentDuplicateIcon className="w-6 h-6" />
             Copy

@@ -1,25 +1,15 @@
 'use client';
 
+import CopyBar from '@/components/CopyBar';
 import PasteLoadClearBar from '@/components/PasteLoadClearBar';
-import {
-  ArrowsRightLeftIcon,
-  DocumentDuplicateIcon,
-} from '@heroicons/react/24/outline';
+import SwitchSetting from '@/components/SwitchSetting';
+import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { useEffect, useRef, useState } from 'react';
-import Switch from 'react-switch';
 
 function UrlPage() {
   const [isEncode, setIsEncode] = useState(true);
   const [inputText, setInputText] = useState('');
   const outputRef = useRef<HTMLTextAreaElement>(null);
-
-  const writeClipboard = () => {
-    const text = outputRef.current?.value || '';
-    const clipboard = navigator.clipboard;
-    if (clipboard) {
-      clipboard.writeText(text);
-    }
-  };
 
   useEffect(() => {
     if (isEncode) {
@@ -45,32 +35,20 @@ function UrlPage() {
 
       <div>
         <h2>Configuration</h2>
-        <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-          <div>
-            <ArrowsRightLeftIcon className="w-6 h-6" />
-          </div>
-          <div className="flex flex-col justify-start flex-1">
-            <span className="text-lg">Conversion</span>
-            <span className="text-xs">
-              Select which conversion mode you want to use
-            </span>
-          </div>
-          <div>{isEncode ? 'Encode' : 'Decode'}</div>
-          <div>
-            <Switch
-              checked={isEncode}
-              onChange={(checked) => {
-                setIsEncode(checked);
-                const temp = inputText.slice();
-                setInputText(outputRef.current?.value || '');
-                outputRef.current && (outputRef.current.value = temp);
-              }}
-              checkedIcon={false}
-              uncheckedIcon={false}
-              onColor="#0369A1"
-            />
-          </div>
-        </div>
+        <SwitchSetting
+          Icon={ArrowsRightLeftIcon}
+          value={isEncode}
+          onChange={(checked) => {
+            setIsEncode(checked);
+            const temp = inputText.slice();
+            setInputText(outputRef.current?.value || '');
+            outputRef.current && (outputRef.current.value = temp);
+          }}
+          title="Conversion"
+          subTitle="Select which conversion mode you want to use"
+          trueValue="Encode"
+          falseValue="Decode"
+        />
       </div>
 
       <div className="flex-1 flex flex-col">
@@ -86,17 +64,10 @@ function UrlPage() {
       </div>
 
       <div className="flex-1 flex flex-col">
-        <div className="flex justify-between items-center mb-3">
-          <h2>Output</h2>
-          <button
-            className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-            title="Copy"
-            onClick={writeClipboard}
-          >
-            <DocumentDuplicateIcon className="w-6 h-6" />
-            Copy
-          </button>
-        </div>
+        <CopyBar
+          title="Output"
+          getNeedCopyText={() => outputRef.current?.value || ''}
+        />
         <textarea
           className="w-full flex-1 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
           readOnly

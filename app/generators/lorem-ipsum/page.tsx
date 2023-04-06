@@ -1,5 +1,7 @@
 'use client';
 
+import SelectSetting from '@/components/SelectSetting';
+import SwitchSetting from '@/components/SwitchSetting';
 import {
   Bars3BottomRightIcon,
   HashtagIcon,
@@ -11,7 +13,6 @@ import {
 import { loremIpsum } from 'lorem-ipsum';
 import { LoremUnit } from 'lorem-ipsum/types/src/constants/units';
 import { useEffect, useRef, useState } from 'react';
-import Switch from 'react-switch';
 
 const typeOptions: LoremUnit[] = ['words', 'sentences', 'paragraphs'];
 const prefixArray = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet'];
@@ -76,30 +77,18 @@ function LoremIpsumPage() {
 
       <div>
         <h2>Configuration</h2>
-        <div className="space-y-2">
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <Bars3BottomRightIcon className="w-6 h-6" />
-            </div>
-            <div className="flex flex-col justify-start flex-1">
-              <span className="text-lg">Type</span>
-              <span className="text-xs">
-                Generate words, sentences or paragraphs of Lorem ipsum
-              </span>
-            </div>
-            <div className="px-3 py-2 shadow border rounded-md">
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as LoremUnit)}
-              >
-                {typeOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option[0].toUpperCase() + option.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+        <div className="space-y-3">
+          <SelectSetting
+            Icon={Bars3BottomRightIcon}
+            value={type}
+            onChange={(value) => setType(value as LoremUnit)}
+            title="Type"
+            subTitle="Generate words, sentences or paragraphs of Lorem ipsum"
+            options={typeOptions}
+            optionValueFormatter={(value) =>
+              value[0].toUpperCase() + value.slice(1)
+            }
+          />
           <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 mb-5 h-20">
             <div>
               <HashtagIcon className="w-6 h-6" />
@@ -127,26 +116,14 @@ function LoremIpsumPage() {
               />
             </div>
           </div>
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 mb-5 h-20">
-            <div>
-              <Cog8ToothIcon className="w-6 h-6" />
-            </div>
-            <span className="flex-1">
-              Start with 'Lorem ipsum dolor sit amet...'
-            </span>
-            <div>{withPrefix ? 'On' : 'Off'}</div>
-            <div>
-              <Switch
-                checked={withPrefix}
-                onChange={(checked) => {
-                  setWithPrefix(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
-              />
-            </div>
-          </div>
+          <SwitchSetting
+            Icon={Cog8ToothIcon}
+            value={withPrefix}
+            onChange={(checked) => setWithPrefix(checked)}
+            title="Start with 'Lorem ipsum dolor sit amet...'"
+            trueValue="On"
+            falseValue="Off"
+          />
         </div>
       </div>
 

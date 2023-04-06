@@ -6,21 +6,22 @@ import {
   LanguageIcon,
   XMarkIcon,
   ClipboardDocumentCheckIcon,
-  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
 import { useEffect, useRef, useState } from 'react';
-import Switch from 'react-switch';
 import parser from 'cron-parser';
 import dayjs from 'dayjs';
 import TipBlock from '@/components/TipBlock';
+import SwitchSetting from '@/components/SwitchSetting';
+import SelectSetting from '@/components/SelectSetting';
+import CopyBar from '@/components/CopyBar';
 
-const options = [5, 10, 25, 50, 100];
+const options = ['5', '10', '25', '50', '100'];
 
 const defaultFormat = 'YYYY-MM-DD HH:mm:ss';
 
 function CronParsePage() {
   const [includeSeconds, setIncludeSeconds] = useState(true);
-  const [nextCount, setNextCount] = useState(options[0]);
+  const [nextCount, setNextCount] = useState<number>(Number(options[0]));
   const [format, setFormat] = useState(defaultFormat);
   const [cron, setCron] = useState('* * * * * *');
   const outputRef = useRef<HTMLTextAreaElement>(null);
@@ -92,57 +93,26 @@ function CronParsePage() {
       <div>
         <h2>Configuration</h2>
         <div className="space-y-3">
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <ArrowsRightLeftIcon className="w-6 h-6" />
-            </div>
-            <div className="flex flex-col justify-start flex-1">
-              <span className="text-lg">Cron Mode</span>
-              <span className="text-xs">
-                Choose whatever Cron expression should includes seconds in its
-                definition.
-              </span>
-            </div>
-            <div>
-              {includeSeconds
-                ? 'Seconds included (6 - segment Cron)'
-                : 'Standard mode (5 - segment Cron)'}
-            </div>
-            <div>
-              <Switch
-                checked={includeSeconds}
-                onChange={(checked) => {
-                  setIncludeSeconds(checked);
-                }}
-                checkedIcon={false}
-                uncheckedIcon={false}
-                onColor="#0369A1"
-              />
-            </div>
-          </div>
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-            <div>
-              <BarsArrowDownIcon className="w-6 h-6" />
-            </div>
-            <div className="flex flex-col justify-start flex-1">
-              <span className="text-lg">Next scheduled dates</span>
-              <span className="text-xs">
-                How many scheduled dates needs to be generated
-              </span>
-            </div>
-            <div className="px-3 py-2 shadow border rounded-md">
-              <select
-                value={nextCount}
-                onChange={(e) => setNextCount(Number(e.target.value))}
-              >
-                {options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <SwitchSetting
+            Icon={ArrowsRightLeftIcon}
+            value={includeSeconds}
+            onChange={(checked) => setIncludeSeconds(checked)}
+            title="Cron Mode"
+            subTitle="Choose whatever Cron expression should includes seconds in its
+            definition."
+            trueValue="Seconds included (6 - segment Cron)"
+            falseValue="Standard mode (5 - segment Cron)"
+          />
+
+          <SelectSetting
+            Icon={BarsArrowDownIcon}
+            value={nextCount.toString()}
+            onChange={(value) => setNextCount(Number(value))}
+            title="Next scheduled dates"
+            subTitle="How many scheduled dates needs to be generated"
+            options={options}
+          />
+
           <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
             <div>
               <LanguageIcon className="w-6 h-6" />
@@ -195,17 +165,10 @@ function CronParsePage() {
       </div>
 
       <div>
-        <div className="flex justify-between items-center mb-2">
-          <h2>Next scheduled dates</h2>
-          <button
-            className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-            title="Copy"
-            onClick={writeClipboard}
-          >
-            <DocumentDuplicateIcon className="w-6 h-6" />
-            Copy
-          </button>
-        </div>
+        <CopyBar
+          title="Next scheduled dates"
+          getNeedCopyText={() => outputRef.current?.value || ''}
+        />
         <textarea
           className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
           ref={outputRef}

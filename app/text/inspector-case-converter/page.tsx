@@ -268,13 +268,6 @@ function InspectorCaseConverter() {
     }
   };
 
-  const writeClipboard = () => {
-    const clipboard = navigator.clipboard;
-    if (clipboard) {
-      clipboard.writeText(inputString);
-    }
-  };
-
   useEffect(() => {
     if (inputString) {
       const characters = inputString.length;
@@ -517,7 +510,7 @@ function InspectorCaseConverter() {
               setInputString(value);
               setBackupString(value);
             }}
-            onCopy={() => writeClipboard()}
+            getNeedCopyText={() => inputString}
           />
           <textarea
             className="w-full flex-1 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
