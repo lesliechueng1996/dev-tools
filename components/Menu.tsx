@@ -22,6 +22,13 @@ function Menu() {
   }, [favorites]);
 
   const pathname = usePathname();
+  let pathNameWithoutBase = pathname;
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    pathNameWithoutBase = pathNameWithoutBase.replace(
+      process.env.NEXT_PUBLIC_BASE_URL,
+      ''
+    );
+  }
   const router = useRouter();
 
   const searchSuggestion = useCallback((data: MenuItem[], keyword: string) => {
@@ -91,7 +98,7 @@ function Menu() {
               icon={AllToolsSvg}
               label="All tools"
               isLeaf={true}
-              isActive={pathname === '/'}
+              isActive={pathNameWithoutBase === ''}
             />
           </Link>
 
@@ -118,7 +125,7 @@ function Menu() {
                 isLeaf={false}
                 expand={item.expand}
                 onClick={clickMenu}
-                isActive={pathname === item.link}
+                isActive={pathNameWithoutBase === item.link}
               />
               <div
                 className={`pl-12 grid transition-all duration-500 ease-in-out`}
@@ -133,7 +140,7 @@ function Menu() {
                         label={subItem.label}
                         isLeaf
                         expand={false}
-                        isActive={pathname === subItem.link}
+                        isActive={pathNameWithoutBase === subItem.link}
                       />
                     </Link>
                   ))}
