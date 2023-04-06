@@ -38,9 +38,9 @@ function MenuRow({
         <div>
           {!isLeaf ? (
             expand ? (
-              <ChevronUpIcon className="h-6 w-6 dark:text-white/700" />
+              <ChevronUpIcon className="h-6 w-6 dark:text-white/70" />
             ) : (
-              <ChevronDownIcon className="h-6 w-6 dark:text-white/700" />
+              <ChevronDownIcon className="h-6 w-6 dark:text-white/70" />
             )
           ) : null}
         </div>

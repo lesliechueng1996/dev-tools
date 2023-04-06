@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Cog6ToothIcon } from '@heroicons/react/24/outline';
+// import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import MenuRow from './MenuRow';
 import AllToolsSvg from '@/components/icons/AllToolsSvg';
 import menuData, { filterDataByIds } from '@/data';

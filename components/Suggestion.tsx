@@ -30,7 +30,7 @@ function Suggestion({ data, searchFun, onChoose, onSeeAll }: Props) {
 
   return (
     <div className="relative">
-      <div className="bg-white dark:bg-slate-800 flex items-center rounded-md px-3 py-1 border-b-sky-600 dark:border-b-white/70 border-b-2">
+      <div className="bg-white dark:bg-slate-800 flex items-center rounded-md px-3 py-1 border-b-sky-600 dark:border-b-cyan-400 border-b-2">
         <input
           value={searchText}
           onChange={(e) => {

@@ -15,7 +15,7 @@ function ToolItem({ tool }: { tool: MenuItem }) {
 
   return (
     <div
-      className="group flex flex-col items-center rounded-md bg-white w-48 h-80 overflow-hidden shadow-md border hover:scale-110 transition-all duration-300 cursor-pointer"
+      className="group flex flex-col items-center rounded-md theme-bg dark:border-slate-700 w-48 h-80 overflow-hidden shadow-md border hover:scale-110 transition-all duration-300 cursor-pointer"
       onClick={() => {
         router.push(tool.link ?? '/');
       }}
