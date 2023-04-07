@@ -41,7 +41,7 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
       hue: color.hue,
       saturation: color.saturation,
       value: color.value,
-      opacity: Math.floor((color.opacity * 100) / 255),
+      opacity: color.opacity,
     };
   });
 
@@ -78,7 +78,7 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
       hue: color.hue,
       saturation: color.saturation,
       value: color.value,
-      opacity: Math.floor((color.opacity * 100) / 255),
+      opacity: color.opacity,
     });
     onColorChange(color);
   }, [color]);
@@ -216,11 +216,11 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
           startColor={color?.toRGBAWithOpacity(0) ?? ''}
           endColor={color?.toRGBAWithOpacity(255) ?? ''}
           opacityFlag
-          percent={Math.floor((color.opacity * 100) / 255)}
+          percent={color.opacity}
           onPercentChange={(percent) => {
             const newColor = new Color({
               ...colorRef.current,
-              opacity: (percent / 100) * 255,
+              opacity: percent,
             });
             newColor.updateHex();
             setColorRef(newColor);
@@ -421,10 +421,9 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
                 opacity: num,
               });
               if (num >= 0 && num <= 100) {
-                const newOpacity = (num / 100) * 255;
                 const newColor = new Color({
                   ...color,
-                  opacity: newOpacity,
+                  opacity: num,
                 });
                 newColor.updateHex();
                 setColorRef(newColor);

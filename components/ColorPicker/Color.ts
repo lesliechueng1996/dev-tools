@@ -37,6 +37,7 @@ const rgbaToHex = ({
   hex += r.toString(16).padStart(2, '0');
   hex += g.toString(16).padStart(2, '0');
   hex += b.toString(16).padStart(2, '0');
+  a = Math.round((a / 100) * 255);
   hex += a.toString(16).padStart(2, '0');
   return hex;
 };
@@ -157,7 +158,6 @@ export default class Color {
       r: redValue,
       g: greenValue,
       b: blueValue,
-      a: alphaValue,
     };
     const hsv = rgbToHSV(obj);
     return new Color({
@@ -166,7 +166,7 @@ export default class Color {
       red: redValue,
       green: greenValue,
       blue: blueValue,
-      opacity: alphaValue,
+      opacity: Math.floor((alphaValue / 255) * 100),
     });
   }
 
