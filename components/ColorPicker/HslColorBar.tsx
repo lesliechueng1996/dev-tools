@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import styles from './ColorBar.module.css';
 
 type Props = {
   width: number;
@@ -95,7 +94,7 @@ function HslColorBar({ width, percent, onPercentChange }: Props) {
   );
 
   return (
-    <div className={`${styles.box}`}>
+    <div className="mb-5 theme-border overflow-hidden relative">
       <canvas
         ref={canvasRef}
         width={width}
@@ -104,7 +103,7 @@ function HslColorBar({ width, percent, onPercentChange }: Props) {
       />
       <div
         ref={moveCircleRef}
-        className={styles.moveCircle}
+        className="absolute h-[20px] bg-white theme-border w-[15px] top-0 left-0 cursor-pointer"
         onMouseDown={onMoveCircleMouseDown}
       ></div>
     </div>

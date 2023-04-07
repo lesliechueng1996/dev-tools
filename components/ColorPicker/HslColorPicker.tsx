@@ -1,15 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import styles from './style.module.css';
 import ColorBar from './HsvColorBar';
-import HsvColor from './HsvColor';
+import Color from './Color';
 import HslColorBar from './HslColorBar';
 
 type Props = {
   width: number;
-  defaultColor: HsvColor;
-  onColorChange: (color: HsvColor) => void;
+  defaultColor: Color;
+  onColorChange: (color: Color) => void;
 };
 
 type Inputs = {
@@ -29,17 +28,16 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
   const colorBoxRef = useRef<HTMLCanvasElement>(null);
   const moveCircleRef = useRef<HTMLDivElement>(null);
 
-  const [color, setColor] = useState<HsvColor>(HsvColor.copy(defaultColor));
-  const colorRef = useRef<HsvColor>(color);
+  const [color, setColor] = useState<Color>(defaultColor);
+  const colorRef = useRef<Color>(color);
 
   const [mode, setMode] = useState('RGB');
   const [colorInput, setColorInput] = useState<Inputs>(() => {
-    const rgba = color.toRGBA();
     return {
-      hex: color.toHex(),
-      red: rgba.a,
-      green: rgba.g,
-      blue: rgba.b,
+      hex: color.hex,
+      red: color.red,
+      green: color.green,
+      blue: color.blue,
       hue: color.hue,
       saturation: color.saturation,
       value: color.value,
@@ -54,7 +52,11 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const gradient1 = ctx.createLinearGradient(0, 0, canvas.width, 0);
     gradient1.addColorStop(0, '#ffffff');
-    gradient1.addColorStop(1, color.toRGBAWithOpacity(255));
+    const temp = Color.copy(color);
+    temp.saturation = 100;
+    temp.value = 100;
+    temp.updateRgbAndHex();
+    gradient1.addColorStop(1, temp.toRGBAWithOpacity(255));
     ctx.fillStyle = gradient1;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -68,12 +70,11 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
   useEffect(() => {
     setPointByHSV(color);
     setMoveCircieColor(color);
-    const rgba = color.toRGBA();
     setColorInput({
-      hex: color.toHex(),
-      red: rgba.r,
-      green: rgba.g,
-      blue: rgba.b,
+      hex: color.hex,
+      red: color.red,
+      green: color.green,
+      blue: color.blue,
       hue: color.hue,
       saturation: color.saturation,
       value: color.value,
@@ -83,12 +84,12 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
   }, [color]);
 
   // methods
-  const setColorRef = (newColor: HsvColor) => {
+  const setColorRef = (newColor: Color) => {
     colorRef.current = newColor;
     setColor(newColor);
   };
 
-  const setPointByHSV = (color: HsvColor) => {
+  const setPointByHSV = (color: Color) => {
     const { saturation, value } = color;
     const x = (width * saturation) / 100;
     const y = width - (width * value) / 100;
@@ -96,9 +97,9 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
     moveCircleRef.current!.style.top = `calc(${y}px - ${halfCircleWidth})`;
   };
 
-  const setMoveCircieColor = (color: HsvColor) => {
-    const { r, g, b } = color.toRGBA();
-    const flag = 0.213 * r + 0.715 * g + 0.072 * b > 255 / 2;
+  const setMoveCircieColor = (color: Color) => {
+    const flag =
+      0.213 * color.red + 0.715 * color.green + 0.072 * color.blue > 255 / 2;
     moveCircleRef.current!.style.borderColor = flag ? '#000000' : '#ffffff';
   };
 
@@ -107,7 +108,7 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
     const value = 100 - (y / width) * 100;
 
     const { hue, opacity } = colorRef.current;
-    const newColor = new HsvColor({ hue, saturation, value, opacity });
+    const newColor = Color.fromHSVA({ hue, saturation, value, opacity });
 
     setMoveCircieColor(newColor);
     setColorRef(newColor);
@@ -180,7 +181,7 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
     <div style={{ width: `${width}px` }}>
       <div>
         <div
-          className={styles.colorBox}
+          className="relative theme-border overflow-hidden mb-5"
           style={{ width: `${width}px`, height: `${width}px` }}
         >
           <canvas
@@ -192,7 +193,7 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
           <div
             ref={moveCircleRef}
             onMouseDown={onCircleMouseDown}
-            className={styles.moveCircle}
+            className="absolute top-0 left-0 bg-transparent w-4 h-4 border-black rounded-full border-[2.5px] cursor-move"
           ></div>
         </div>
         <HslColorBar
@@ -201,10 +202,12 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
           onPercentChange={(percent) => {
             const hue = Math.floor((percent / 100) * 360);
 
-            const newColor = new HsvColor({
+            const newColor = new Color({
               ...colorRef.current,
               hue,
             });
+            newColor.updateRgbAndHex();
+            console.log(1, newColor.toRGBAWithOpacity(255));
             setColorRef(newColor);
           }}
         />
@@ -215,19 +218,21 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
           opacityFlag
           percent={Math.floor((color.opacity * 100) / 255)}
           onPercentChange={(percent) => {
-            const newColor = new HsvColor({
+            const newColor = new Color({
               ...colorRef.current,
               opacity: (percent / 100) * 255,
             });
+            newColor.updateHex();
             setColorRef(newColor);
           }}
         />
       </div>
       <div>
-        <div className={styles.inputWrap}>
-          <div className={styles.selectWrap}>
+        <div className="flex gap-3 items-center mb-3">
+          <div className="theme-border px-2 py-3 theme-bg">
             <select
               value={mode}
+              className="theme-bg"
               onChange={(e) => {
                 setMode(e.target.value);
               }}
@@ -237,24 +242,28 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
             </select>
           </div>
           <input
-            className={styles.input}
+            className="theme-border outline-none px-2 py-3 flex-1 theme-bg"
             type="text"
-            value={color.toHex()}
+            value={colorInput.hex}
             onChange={(e) => {
               const text = e.target.value;
+              setColorInput({
+                ...colorInput,
+                hex: text,
+              });
               if (!/^#([A-Fa-f0-9]{2}){4}$/.test(text)) {
                 return;
               }
 
-              setColorRef(HsvColor.fromHex(text));
+              setColorRef(Color.fromHex(text));
             }}
           />
         </div>
         {mode === 'RGB' ? (
           <>
-            <div className={styles.inputWrap}>
+            <div className="flex gap-3 items-center mb-3">
               <input
-                className={styles.input}
+                className="theme-border outline-none px-2 py-3 flex-1 theme-bg"
                 type="text"
                 value={colorInput.red}
                 onChange={(e) => {
@@ -264,20 +273,21 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
                     red,
                   });
                   if (red >= 0 && red <= 255) {
-                    setColorRef(
-                      HsvColor.fromRGBA({
-                        ...color.toRGBA(),
-                        r: red,
-                      })
-                    );
+                    const newColor = new Color({
+                      ...color,
+                      red,
+                    });
+                    newColor.updateHSV();
+                    newColor.updateHex();
+                    setColorRef(newColor);
                   }
                 }}
               />
-              <span className={styles.label}>Red</span>
+              <span className="flex-1">Red</span>
             </div>
-            <div className={styles.inputWrap}>
+            <div className="flex gap-3 items-center mb-3">
               <input
-                className={styles.input}
+                className="theme-border outline-none px-2 py-3 flex-1 theme-bg"
                 type="text"
                 value={colorInput.green}
                 onChange={(e) => {
@@ -287,20 +297,21 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
                     green,
                   });
                   if (green >= 0 && green <= 255) {
-                    setColorRef(
-                      HsvColor.fromRGBA({
-                        ...color.toRGBA(),
-                        g: green,
-                      })
-                    );
+                    const newColor = new Color({
+                      ...color,
+                      green,
+                    });
+                    newColor.updateHSV();
+                    newColor.updateHex();
+                    setColorRef(newColor);
                   }
                 }}
               />
-              <span className={styles.label}>Green</span>
+              <span className="flex-1">Green</span>
             </div>
-            <div className={styles.inputWrap}>
+            <div className="flex gap-3 items-center mb-3">
               <input
-                className={styles.input}
+                className="theme-border outline-none px-2 py-3 flex-1 theme-bg"
                 type="text"
                 value={colorInput.blue}
                 onChange={(e) => {
@@ -310,23 +321,24 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
                     blue,
                   });
                   if (blue >= 0 && blue <= 255) {
-                    setColorRef(
-                      HsvColor.fromRGBA({
-                        ...color.toRGBA(),
-                        b: blue,
-                      })
-                    );
+                    const newColor = new Color({
+                      ...color,
+                      blue,
+                    });
+                    newColor.updateHSV();
+                    newColor.updateHex();
+                    setColorRef(newColor);
                   }
                 }}
               />
-              <span className={styles.label}>Blue</span>
+              <span className="flex-1">Blue</span>
             </div>
           </>
         ) : (
           <>
-            <div className={styles.inputWrap}>
+            <div className="flex gap-3 items-center mb-3">
               <input
-                className={styles.input}
+                className="theme-border outline-none px-2 py-3 flex-1 theme-bg"
                 type="text"
                 value={colorInput.hue}
                 onChange={(e) => {
@@ -336,21 +348,21 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
                     hue,
                   });
                   if (hue >= 0 && hue < 360) {
-                    setColorRef(
-                      new HsvColor({
-                        ...color,
-                        hue,
-                      })
-                    );
+                    const newColor = new Color({
+                      ...color,
+                      hue,
+                    });
+                    newColor.updateRgbAndHex();
+                    setColorRef(newColor);
                   }
                 }}
               />
-              <span className={styles.label}>Hue</span>
+              <span className="flex-1">Hue</span>
             </div>
 
-            <div className={styles.inputWrap}>
+            <div className="flex gap-3 items-center mb-3">
               <input
-                className={styles.input}
+                className="theme-border outline-none px-2 py-3 flex-1 theme-bg"
                 type="text"
                 value={colorInput.saturation}
                 onChange={(e) => {
@@ -360,21 +372,21 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
                     saturation,
                   });
                   if (saturation >= 0 && saturation <= 100) {
-                    setColorRef(
-                      new HsvColor({
-                        ...color,
-                        saturation,
-                      })
-                    );
+                    const newColor = new Color({
+                      ...color,
+                      saturation,
+                    });
+                    newColor.updateRgbAndHex();
+                    setColorRef(newColor);
                   }
                 }}
               />
-              <span className={styles.label}>Saturation</span>
+              <span className="flex-1">Saturation</span>
             </div>
 
-            <div className={styles.inputWrap}>
+            <div className="flex gap-3 items-center mb-3">
               <input
-                className={styles.input}
+                className="theme-border outline-none px-2 py-3 flex-1 theme-bg"
                 type="text"
                 value={colorInput.value}
                 onChange={(e) => {
@@ -384,22 +396,22 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
                     value,
                   });
                   if (value >= 0 && value <= 100) {
-                    setColorRef(
-                      new HsvColor({
-                        ...color,
-                        value,
-                      })
-                    );
+                    const newColor = new Color({
+                      ...color,
+                      value,
+                    });
+                    newColor.updateRgbAndHex();
+                    setColorRef(newColor);
                   }
                 }}
               />
-              <span className={styles.label}>Value</span>
+              <span className="flex-1">Value</span>
             </div>
           </>
         )}
-        <div className={styles.inputWrap}>
+        <div className="flex gap-3 items-center mb-3">
           <input
-            className={styles.input}
+            className="theme-border outline-none px-2 py-3 flex-1 theme-bg"
             type="text"
             value={colorInput.opacity}
             onChange={(e) => {
@@ -409,16 +421,17 @@ function HslColorPicker({ width, defaultColor, onColorChange }: Props) {
                 opacity: num,
               });
               if (num >= 0 && num <= 100) {
-                setColorRef(
-                  new HsvColor({
-                    ...color,
-                    opacity: (num / 100) * 255,
-                  })
-                );
+                const newOpacity = (num / 100) * 255;
+                const newColor = new Color({
+                  ...color,
+                  opacity: newOpacity,
+                });
+                newColor.updateHex();
+                setColorRef(newColor);
               }
             }}
           />
-          <span className={styles.label}>Opacity(%)</span>
+          <span className="flex-1">Opacity(%)</span>
         </div>
       </div>
     </div>

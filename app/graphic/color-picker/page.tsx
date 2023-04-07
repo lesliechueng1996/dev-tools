@@ -1,28 +1,18 @@
 'use client';
 
 import HsvColorPicker from '@/components/ColorPicker/HsvColorPicker';
-import HsvColor from '@/components/ColorPicker/HsvColor';
 import { PaintBrushIcon } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import HslColorPicker from '@/components/ColorPicker/HslColorPicker';
 import ContrastRatio from '@/components/ContrastRatio';
 import SelectSetting from '@/components/SelectSetting';
+import Color from '@/components/ColorPicker/Color';
 
 const modeList = ['HSV', 'HSL'];
 
-const defaultHsvTextColor = new HsvColor({
-  hue: 115,
-  saturation: 42,
-  value: 91,
-  opacity: 200,
-});
+const defaultHsvTextColor = Color.fromHex('#a50e0eec');
 
-const defaultHsvBgColor = new HsvColor({
-  hue: 244,
-  saturation: 73,
-  value: 74,
-  opacity: 255,
-});
+const defaultHsvBgColor = Color.fromHex('#4de217ff');
 
 const luminanace = ({ r, g, b }: { r: number; g: number; b: number }) => {
   var a = [r, g, b].map((v) => {
@@ -32,9 +22,17 @@ const luminanace = ({ r, g, b }: { r: number; g: number; b: number }) => {
   return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
 };
 
-const contrast = (textColor: HsvColor, bgColor: HsvColor) => {
-  const textRgb = textColor.toRGBA();
-  const bgRgb = bgColor.toRGBA();
+const contrast = (textColor: Color, bgColor: Color) => {
+  const textRgb = {
+    r: textColor.red,
+    g: textColor.green,
+    b: textColor.blue,
+  };
+  const bgRgb = {
+    r: bgColor.red,
+    g: bgColor.green,
+    b: bgColor.blue,
+  };
 
   const lum1 = luminanace(textRgb);
   const lum2 = luminanace(bgRgb);
@@ -77,8 +75,8 @@ function ColorPickerPage() {
         <div
           className="rounded-md flex flex-col justify-center items-center py-5"
           style={{
-            backgroundColor: hsvBgColor.toRGBAStr(),
-            color: hsvTextColor.toRGBAStr(),
+            backgroundColor: hsvBgColor.hex,
+            color: hsvTextColor.hex,
           }}
         >
           <h3 className="text-xl">Lorem ipsum dolor</h3>
@@ -126,7 +124,7 @@ function ColorPickerPage() {
             <HsvColorPicker
               width={300}
               defaultColor={hsvTextColor}
-              onColorChange={(color: HsvColor) => {
+              onColorChange={(color: Color) => {
                 setHsvTextColor(color);
               }}
             />
@@ -136,7 +134,7 @@ function ColorPickerPage() {
             <HsvColorPicker
               width={300}
               defaultColor={hsvBgColor}
-              onColorChange={(color: HsvColor) => {
+              onColorChange={(color: Color) => {
                 setHsvBgColor(color);
               }}
             />
@@ -149,7 +147,7 @@ function ColorPickerPage() {
             <HslColorPicker
               width={300}
               defaultColor={hsvTextColor}
-              onColorChange={(color: HsvColor) => {
+              onColorChange={(color: Color) => {
                 setHsvTextColor(color);
               }}
             />
@@ -159,7 +157,7 @@ function ColorPickerPage() {
             <HslColorPicker
               width={300}
               defaultColor={hsvBgColor}
-              onColorChange={(color: HsvColor) => {
+              onColorChange={(color: Color) => {
                 setHsvBgColor(color);
               }}
             />

@@ -102,7 +102,11 @@ function HsvColorBar({
   );
 
   return (
-    <div className={`${styles.box} ${opacityFlag && styles.opacityCanvas}`}>
+    <div
+      className={`mb-5 theme-border overflow-hidden relative ${
+        opacityFlag && styles.opacityCanvas
+      }`}
+    >
       <canvas
         ref={canvasRef}
         width={width}
@@ -111,7 +115,7 @@ function HsvColorBar({
       />
       <div
         ref={moveCircleRef}
-        className={styles.moveCircle}
+        className="absolute h-[20px] bg-white theme-border w-[15px] top-0 left-0 cursor-pointer"
         onMouseDown={onMoveCircleMouseDown}
       ></div>
     </div>
