@@ -89,14 +89,14 @@ function UuidPage() {
         <h2>Generate</h2>
         <div className="flex gap-2 items-center">
           <button
-            className="border rounded-md px-3 py-2 text-white bg-sky-700"
+            className="theme-border px-3 py-2 text-white bg-sky-700"
             onClick={generateUUID}
           >
             Generate UUID(s)
           </button>
           <span className="font-bold">x</span>
           <input
-            className="outline-none py-1 px-2 rounded-sm shadow border"
+            className="outline-none py-1 px-2 theme-border theme-bg"
             type="number"
             value={number}
             min={1}
@@ -117,7 +117,7 @@ function UuidPage() {
           <h2>UUID(s)</h2>
           <div className="flex gap-3 items-center">
             <button
-              className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+              className="theme-button"
               title="Copy"
               onClick={writeClipboard}
             >
@@ -125,7 +125,7 @@ function UuidPage() {
               Copy
             </button>
             <button
-              className="bg-white rounded-md px-3 py-2 shadow"
+              className="theme-button"
               title="Clear"
               onClick={() => {
                 outputRef.current!.value = '';
@@ -136,7 +136,7 @@ function UuidPage() {
           </div>
         </div>
         <textarea
-          className="w-full flex-1 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full flex-1 theme-bg theme-border resize-none outline-none p-3"
           ref={outputRef}
           readOnly
         ></textarea>

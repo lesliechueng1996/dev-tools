@@ -6,6 +6,7 @@ import { PaintBrushIcon } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import HslColorPicker from '@/components/ColorPicker/HslColorPicker';
 import ContrastRatio from '@/components/ContrastRatio';
+import SelectSetting from '@/components/SelectSetting';
 
 const modeList = ['HSV', 'HSL'];
 
@@ -61,22 +62,14 @@ function ColorPickerPage() {
       <h1 className="text-3xl">Color Picker & Contrast</h1>
 
       <div>
-        <h2 className="mb-2">Configuration</h2>
-        <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
-          <div>
-            <PaintBrushIcon className="w-6 h-6" />
-          </div>
-          <span className="flex-1">Mode</span>
-          <div className="px-3 py-2 shadow border rounded-md">
-            <select value={mode} onChange={(e) => setMode(e.target.value)}>
-              {modeList.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <h2>Configuration</h2>
+        <SelectSetting
+          Icon={PaintBrushIcon}
+          value={mode}
+          onChange={(value) => setMode(value)}
+          title="Mode"
+          options={modeList}
+        />
       </div>
 
       <div>

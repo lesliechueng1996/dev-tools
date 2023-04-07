@@ -27,7 +27,7 @@ function TipBlock({ type, msg }: Props) {
 
   return (
     <div
-      className={`${colors[type].bgColor} rounded-md px-3 py-5 border shadow flex items-center gap-3`}
+      className={`${colors[type].bgColor} px-3 py-5 theme-border flex items-center gap-3`}
     >
       {type === 'success' ? (
         <>

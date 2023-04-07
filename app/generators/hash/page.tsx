@@ -131,7 +131,7 @@ function HashPage() {
           onValueChange={(value) => setInput(value)}
         />
         <textarea
-          className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full h-56 theme-bg theme-border resize-none outline-none p-3"
           value={input}
           onChange={(e) => setInput(e.target.value)}
         ></textarea>
@@ -144,7 +144,7 @@ function HashPage() {
             onValueChange={(value) => setSecret(value)}
           />
           <textarea
-            className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+            className="w-full h-56 theme-bg theme-border resize-none outline-none p-3"
             value={secret}
             onChange={(e) => setSecret(e.target.value)}
           ></textarea>

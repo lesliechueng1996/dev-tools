@@ -11,7 +11,7 @@ function NumberInput({ title, max, min, value, onValueChange }: Props) {
     <div className="px-2">
       <h2>{title}</h2>
       <input
-        className="w-full outline-none py-1 px-2 rounded-sm shadow border"
+        className="w-full outline-none py-1 px-2 theme-bg theme-border"
         type="number"
         min={min}
         max={max}

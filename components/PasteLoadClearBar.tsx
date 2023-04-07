@@ -64,16 +64,12 @@ function PasteLoadClearBar({
     <div className="flex justify-between items-baseline mb-3">
       <h2>{title}</h2>
       <div className="flex gap-3">
-        <button
-          className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-          title="Paste"
-          onClick={readClipboard}
-        >
+        <button className="theme-button" title="Paste" onClick={readClipboard}>
           <ClipboardDocumentCheckIcon className="w-6 h-6" />
           Paste
         </button>
         <button
-          className="bg-white rounded-md px-3 py-2 shadow"
+          className="theme-button"
           title="Load a file"
           onClick={chooseFile}
         >
@@ -88,7 +84,7 @@ function PasteLoadClearBar({
         </button>
         {withCopy && (
           <button
-            className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+            className="theme-button"
             title="Copy"
             onClick={writeClipboard}
           >
@@ -97,7 +93,7 @@ function PasteLoadClearBar({
           </button>
         )}
         <button
-          className="bg-white rounded-md px-3 py-2 shadow"
+          className="theme-button"
           title="Clear"
           onClick={() => onValueChange('')}
         >

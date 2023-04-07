@@ -87,7 +87,7 @@ function Base64TextPage() {
           onValueChange={(value) => setInputText(value)}
         />
         <textarea
-          className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full h-56 theme-bg theme-border resize-none outline-none p-3"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         ></textarea>
@@ -99,7 +99,7 @@ function Base64TextPage() {
           getNeedCopyText={() => outputRef.current?.value || ''}
         />
         <textarea
-          className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full h-56 theme-bg theme-border resize-none outline-none p-3"
           ref={outputRef}
           readOnly
         ></textarea>

@@ -108,7 +108,7 @@ function DragDropFile({
       <div>or</div>
       <div className="space-x-5">
         <button
-          className="border-b-2 border-sky-800/70 text-sky-800/70"
+          className="border-b-2 border-sky-800/70 text-sky-800/70 dark:border-cyan-400 dark:text-cyan-400"
           onClick={() => {
             fileInput.current!.value = '';
             fileInput.current!.click();

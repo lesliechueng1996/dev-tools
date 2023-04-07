@@ -72,6 +72,7 @@ function RegexTester() {
 
   useEffect(() => {
     if (!text || !expression) {
+      setMatches([]);
       return;
     }
     let flag = 'g';
@@ -138,17 +139,17 @@ function RegexTester() {
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="w-full h-80 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full h-80 theme-bg theme-border resize-none outline-none p-3"
         ></textarea>
       </div>
 
       <div>
         <h2>Matches</h2>
-        <div className="bg-white border shadow rounded-md min-h-[4rem] px-3 py-3">
+        <div className="theme-bg theme-border min-h-[4rem] px-3 py-3">
           {matches.map((match) => (
             <div
               key={match.index}
-              className="flex justify-between border shadow rounded-md h-14 items-center px-5"
+              className="flex justify-between theme-border h-14 items-center px-5"
             >
               <span>Match ${match.index}:</span>
               <span>

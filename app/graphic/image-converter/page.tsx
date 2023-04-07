@@ -125,10 +125,7 @@ function ImageConverter() {
           <InboxArrowDownIcon className="w-6 h-6" />
           <span>Save all</span>
         </button>
-        <button
-          className="flex items-center gap-2 px-3 py-2 bg-white rounded-md shadow"
-          onClick={() => setFileList([])}
-        >
+        <button className="theme-button" onClick={() => setFileList([])}>
           <TrashIcon className="w-6 h-6" />
           <span>Delete all</span>
         </button>
@@ -138,7 +135,7 @@ function ImageConverter() {
         <ul className="space-y-3">
           {fileList.map((file) => (
             <li
-              className="flex gap-5 items-center bg-white shadow border rounded-md px-7 py-5"
+              className="flex gap-5 items-center theme-bg theme-border px-7 py-5"
               key={file.id}
             >
               <div className="flex-1 flex flex-col">
@@ -146,7 +143,7 @@ function ImageConverter() {
                 <span>{fileSizeToString(file.ref.size)}</span>
               </div>
               <button
-                className="p-2 cursor-pointer hover:bg-slate-300/50 rounded-md transition-colors duration-300 ease-in"
+                className="p-2 cursor-pointer hover:bg-slate-300/50 dark:hover:bg-slate-700/50 rounded-md transition-colors duration-300 ease-in"
                 onClick={() => {
                   saveFileAsType(file);
                 }}
@@ -154,7 +151,7 @@ function ImageConverter() {
                 <InboxArrowDownIcon className="w-6 h-6" title="Save as" />
               </button>
               <button
-                className="p-2 cursor-pointer hover:bg-slate-300/50 rounded-md transition-colors duration-300 ease-in"
+                className="p-2 cursor-pointer hover:bg-slate-300/50 dark:hover:bg-slate-700/50 rounded-md transition-colors duration-300 ease-in"
                 onClick={() => removeFileFromFileList(file.id)}
               >
                 <TrashIcon className="w-6 h-6 cursor-pointer" title="Delete" />

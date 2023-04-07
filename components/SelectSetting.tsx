@@ -22,7 +22,7 @@ function SelectSetting({
   keyValueOptions,
 }: Props) {
   return (
-    <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
+    <div className="flex items-center theme-bg py-5 px-5 theme-border gap-5 h-20">
       <div>
         <Icon className="w-6 h-6" />
       </div>
@@ -30,8 +30,12 @@ function SelectSetting({
         <span className="text-lg">{title}</span>
         {subTitle && <span className="text-xs">{subTitle}</span>}
       </div>
-      <div className="px-3 py-2 shadow border rounded-md">
-        <select value={value} onChange={(e) => onChange(e.target.value)}>
+      <div className="px-3 py-2 shadow border rounded-md dark:border-slate-800">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="theme-bg"
+        >
           {options &&
             options.map((option) => (
               <option key={option} value={option}>

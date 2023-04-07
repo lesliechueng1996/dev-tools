@@ -63,7 +63,7 @@ function HtmlPage() {
         />
         <textarea
           ref={inputRef}
-          className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full h-56 theme-bg theme-border resize-none outline-none p-3"
           value={input}
           onChange={(e) => setInput(e.target.value)}
         ></textarea>
@@ -75,7 +75,7 @@ function HtmlPage() {
           getNeedCopyText={() => outputRef.current?.value || ''}
         />
         <textarea
-          className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full h-56 theme-bg theme-border resize-none outline-none p-3"
           ref={outputRef}
           readOnly
         ></textarea>

@@ -416,86 +416,47 @@ function InspectorCaseConverter() {
           <button
             data-case-type="originalText"
             disabled={textCase === 'originalText'}
-            className="bg-white border shadow rounded-md px-3 py-2 disabled:bg-gray-200 disabled:cursor-not-allowed"
+            className="theme-button disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
           >
             Original text
           </button>
-          <button
-            data-case-type="sentenceCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="sentenceCase" className="theme-button">
             Sentence case
           </button>
-          <button
-            data-case-type="lowerCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="lowerCase" className="theme-button">
             lower case
           </button>
-          <button
-            data-case-type="upperCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="upperCase" className="theme-button">
             UPPER CASE
           </button>
-          <button
-            data-case-type="titleCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="titleCase" className="theme-button">
             Title Case
           </button>
-          <button
-            data-case-type="camelCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="camelCase" className="theme-button">
             camelCase
           </button>
-          <button
-            data-case-type="pascalCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="pascalCase" className="theme-button">
             PascalCase
           </button>
-          <button
-            data-case-type="snakeCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="snakeCase" className="theme-button">
             snake_case
           </button>
-          <button
-            data-case-type="constantCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="constantCase" className="theme-button">
             CONSTANT_CASE
           </button>
-          <button
-            data-case-type="kebabCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="kebabCase" className="theme-button">
             kebab-case
           </button>
-          <button
-            data-case-type="cobolCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="cobolCase" className="theme-button">
             COBOL-CASE
           </button>
-          <button
-            data-case-type="trainCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="trainCase" className="theme-button">
             Train-Case
           </button>
-          <button
-            data-case-type="alternatingCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="alternatingCase" className="theme-button">
             aLtErNaTiNg cAsE
           </button>
-          <button
-            data-case-type="inverseCase"
-            className="bg-white border shadow rounded-md px-3 py-2"
-          >
+          <button data-case-type="inverseCase" className="theme-button">
             InVeRsE CaSe
           </button>
         </div>
@@ -513,7 +474,7 @@ function InspectorCaseConverter() {
             getNeedCopyText={() => inputString}
           />
           <textarea
-            className="w-full flex-1 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+            className="w-full flex-1 theme-bg theme-border resize-none outline-none p-3"
             value={inputString}
             onChange={(e) => {
               setInputString(e.target.value);
@@ -524,7 +485,7 @@ function InspectorCaseConverter() {
           ></textarea>
         </div>
         <div className="w-64 pt-[3.25rem]">
-          <div className="bg-white h-full border shadow rounded-md overflow-y-auto space-y-3 px-3 py-5 text-sm">
+          <div className="theme-bg h-full theme-border overflow-y-auto space-y-3 px-3 py-5 text-sm">
             <div className="space-y-1">
               <h2>Selection</h2>
               <div className="flex justify-between">
@@ -569,7 +530,7 @@ function InspectorCaseConverter() {
             </div>
             <div className="space-y-1">
               <h2>Word distribution</h2>
-              <div className="w-full min-h-[3rem] max-h-52 bg-white border shadow rounded-md p-2 overflow-auto">
+              <div className="w-full min-h-[3rem] max-h-52 theme-bg theme-border p-2 overflow-auto">
                 {wordFrequency.map((word) => (
                   <div key={word.key}>
                     {word.key}: {word.value}
@@ -579,7 +540,7 @@ function InspectorCaseConverter() {
             </div>
             <div className="space-y-1">
               <h2>Character distribution</h2>
-              <div className="w-full min-h-[3rem] max-h-52 bg-white border shadow rounded-md p-2 overflow-auto">
+              <div className="w-full min-h-[3rem] max-h-52 theme-bg theme-border p-2 overflow-auto">
                 {characterFrequency.map((char) => (
                   <div key={char.key}>
                     {char.key}: {char.value}

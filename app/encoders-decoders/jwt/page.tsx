@@ -20,6 +20,7 @@ import * as jose from 'jose';
 import dayjs from 'dayjs';
 import SwitchSetting from '@/components/SwitchSetting';
 import CopyBar from '@/components/CopyBar';
+import { useTheme } from '@/components/ThemeProvider';
 
 type Settings = ShowHideSettingsProps['items'];
 type Editor = Parameters<OnMount>[0];
@@ -40,6 +41,8 @@ const options: string[] = [
 ];
 
 function JwtPage() {
+  const { theme } = useTheme();
+
   const [isEncode, setIsEncode] = useState(true);
   const [needValidate, setNeedValidate] = useState(false);
 
@@ -501,7 +504,7 @@ function JwtPage() {
           <textarea
             ref={tokenOutputRef}
             readOnly
-            className="w-full h-24 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+            className="w-full h-24 theme-bg theme-border resize-none outline-none p-3"
           ></textarea>
         </div>
       )}
@@ -516,7 +519,7 @@ function JwtPage() {
           <textarea
             value={tokenInput}
             onChange={(e) => setTokenInput(e.target.value)}
-            className="w-full h-24 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+            className="w-full h-24 theme-bg theme-border resize-none outline-none p-3"
           ></textarea>
         </div>
       )}
@@ -529,6 +532,7 @@ function JwtPage() {
             onValueChange={(value) => headerEncodeRef.current.setValue(value)}
           />
           <Editor
+            theme={theme === 'dark' ? 'vs-dark' : 'light'}
             height={200}
             language="json"
             onMount={handleHeaderEditorMount}
@@ -541,6 +545,7 @@ function JwtPage() {
             onValueChange={(value) => payloadEncodeRef.current.setValue(value)}
           />
           <Editor
+            theme={theme === 'dark' ? 'vs-dark' : 'light'}
             height={200}
             language="json"
             onMount={handlePayloadEditorMount}
@@ -559,7 +564,7 @@ function JwtPage() {
           placeholder={algorithm.startsWith('HS') ? '' : 'PKCS#8'}
           value={secretInput}
           onChange={(e) => setSecretInput(e.target.value)}
-          className="w-full h-24 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full h-24 theme-bg theme-border resize-none outline-none p-3"
         ></textarea>
       </div>
     </div>

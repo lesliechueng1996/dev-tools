@@ -99,7 +99,7 @@ function CheckSumPage() {
 
       <div>
         <DragDropFile
-          className="bg-white"
+          className="theme-bg"
           acceptAll
           onFileLoad={(file) => {
             const reader = new FileReader();
@@ -123,7 +123,7 @@ function CheckSumPage() {
           value={outputCompare}
           onChange={(e) => setOutputCompare(e.target.value)}
           type="text"
-          className="w-full py-2 px-3 rounded-md outline-none bt-white shadow border"
+          className="w-full py-2 px-3 outline-none theme-bg theme-border"
         />
       </div>
       {isCorrect !== null && (

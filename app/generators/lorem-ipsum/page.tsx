@@ -89,7 +89,7 @@ function LoremIpsumPage() {
               value[0].toUpperCase() + value.slice(1)
             }
           />
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 mb-5 h-20">
+          <div className="flex items-center py-5 px-5 gap-5 h-20 theme-bg theme-border">
             <div>
               <HashtagIcon className="w-6 h-6" />
             </div>
@@ -99,9 +99,9 @@ function LoremIpsumPage() {
                 Number of words, sentences or paragraphs to generate
               </span>
             </div>
-            <div className="px-3 py-2 shadow border rounded-md">
+            <div className="px-3 py-2 theme-border">
               <input
-                className="w-full outline-none py-1 px-2"
+                className="w-full outline-none py-1 px-2 theme-bg"
                 type="number"
                 min={1}
                 max={100}
@@ -132,7 +132,7 @@ function LoremIpsumPage() {
           <h2>Output</h2>
           <div className="flex gap-3">
             <button
-              className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+              className="theme-button"
               title="Refresh"
               onClick={() => generateLoremIpsum()}
             >
@@ -140,7 +140,7 @@ function LoremIpsumPage() {
               Refresh
             </button>
             <button
-              className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+              className="theme-button"
               title="Copy"
               onClick={writeClipboard}
             >
@@ -148,7 +148,7 @@ function LoremIpsumPage() {
               Copy
             </button>
             <button
-              className="bg-white rounded-md px-3 py-2 shadow"
+              className="theme-button"
               title="Clear"
               onClick={() => (outputRef.current!.value = '')}
             >
@@ -158,7 +158,7 @@ function LoremIpsumPage() {
         </div>
         <textarea
           ref={outputRef}
-          className="w-full flex-1 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full flex-1 theme-bg theme-border resize-none outline-none p-3"
           readOnly
         ></textarea>
       </div>

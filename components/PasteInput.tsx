@@ -37,7 +37,7 @@ function PasteInput({
         <div className="flex justify-between items-center mb-2">
           <h2>{title}</h2>
           <button
-            className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+            className="theme-button"
             title="Paste"
             onClick={readClipboard}
           >
@@ -47,7 +47,7 @@ function PasteInput({
         </div>
         <div className="flex gap-2">
           <input
-            className="w-full outline-none py-1 px-2 rounded-sm shadow border"
+            className="w-full outline-none py-1 px-2 theme-bg theme-border"
             type="text"
             value={value}
             onChange={(e) => {
@@ -62,7 +62,7 @@ function PasteInput({
           />
           {needClear && (
             <button
-              className="bg-white rounded-md px-3 py-2 shadow"
+              className="theme-button"
               title="Clear"
               onClick={() => {
                 onValueChange('');

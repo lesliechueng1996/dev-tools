@@ -22,7 +22,7 @@ function SwitchSetting({
   falseValue,
 }: Props) {
   return (
-    <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
+    <div className="flex items-center theme-bg py-5 px-5 theme-border gap-5 h-20">
       <div>
         <Icon className="w-6 h-6" />
       </div>

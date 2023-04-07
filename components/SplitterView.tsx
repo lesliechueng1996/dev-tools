@@ -59,7 +59,7 @@ function SplitterView({ leftChild, rightChild, leftMin, rightMin }: Props) {
         className="w-1 bg-gray-200/40 flex items-center cursor-col-resize active:bg-gray-300 transition-colors duration-300"
         onMouseDown={registerMouseMoveEvent}
       >
-        <div className="w-1 h-8 bg-gray-300"></div>
+        <div className="w-1 h-8 bg-gray-300 dark:bg-gray-800"></div>
       </div>
       <div className="p-5" style={{ flexBasis: `calc(${rightWidth}% - 4px)` }}>
         {rightChild}

@@ -165,9 +165,9 @@ function TimestampPage() {
       <div className="space-y-3">
         <h2>Time zone</h2>
 
-        <div className="px-3 py-2 shadow border rounded-md bg-white">
+        <div className="px-3 py-2 theme-bg theme-border">
           <select
-            className="w-full"
+            className="w-full theme-bg"
             value={chooseTimezone}
             onChange={(e) => setChooseTimezone(e.target.value)}
           >
@@ -179,7 +179,7 @@ function TimestampPage() {
           </select>
         </div>
 
-        <div className="grid grid-cols-4 bg-white border shadow rounded-md p-5 gap-3">
+        <div className="grid grid-cols-4 theme-bg theme-border p-5 gap-3">
           <span>Offset</span>
           <span>{data.offset}</span>
           <span>Daylight saving time</span>
@@ -195,13 +195,13 @@ function TimestampPage() {
             <h2>Timestamp</h2>
             <div className="flex gap-3">
               <button
-                className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+                className="theme-button"
                 onClick={() => setData(createData(dayjs(), chooseTimezone))}
               >
                 Now
               </button>
               <button
-                className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+                className="theme-button"
                 title="Paste"
                 onClick={readClipboard}
               >
@@ -209,7 +209,7 @@ function TimestampPage() {
                 Paste
               </button>
               <button
-                className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+                className="theme-button"
                 title="Copy"
                 onClick={writeClipboard}
               >
@@ -220,7 +220,7 @@ function TimestampPage() {
           </div>
           <div>
             <input
-              className="w-full outline-none py-1 px-2 rounded-sm shadow border"
+              className="w-full outline-none py-1 px-2 theme-bg theme-border"
               type="number"
               min={0}
               value={data.timestamp}

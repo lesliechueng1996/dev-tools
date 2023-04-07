@@ -157,10 +157,7 @@ function PngJpegCompressorPage() {
           <InboxArrowDownIcon className="w-6 h-6" />
           <span>Save all</span>
         </button>
-        <button
-          className="flex items-center gap-2 px-3 py-2 bg-white rounded-md shadow"
-          onClick={() => setFileList([])}
-        >
+        <button className="theme-button" onClick={() => setFileList([])}>
           <TrashIcon className="w-6 h-6" />
           <span>Delete all</span>
         </button>
@@ -170,7 +167,7 @@ function PngJpegCompressorPage() {
         <ul className="space-y-3">
           {fileList.map((file) => (
             <li
-              className="flex gap-5 items-center bg-white shadow border rounded-md px-7 py-5"
+              className="flex gap-5 items-center theme-bg theme-border px-7 py-5"
               key={file.id}
             >
               <div>
@@ -195,7 +192,7 @@ function PngJpegCompressorPage() {
               {file.status === 'error' && (
                 <button
                   title="See details"
-                  className="p-2 cursor-pointer hover:bg-slate-300/50 rounded-md transition-colors duration-300 ease-in"
+                  className="p-2 cursor-pointer hover:bg-slate-300/50 dark:hover:bg-slate-700/50 rounded-md transition-colors duration-300 ease-in"
                   onClick={() => {
                     showDialog('Details', file.errorMsg ?? '');
                   }}
@@ -205,7 +202,7 @@ function PngJpegCompressorPage() {
               )}
               {file.status === 'completed' && (
                 <button
-                  className="p-2 cursor-pointer hover:bg-slate-300/50 rounded-md transition-colors duration-300 ease-in"
+                  className="p-2 cursor-pointer hover:bg-slate-300/50 dark:hover:bg-slate-700/50 rounded-md transition-colors duration-300 ease-in"
                   onClick={() => {
                     saveImage(file);
                   }}
@@ -215,7 +212,7 @@ function PngJpegCompressorPage() {
                 </button>
               )}
               <button
-                className="p-2 cursor-pointer hover:bg-slate-300/50 rounded-md transition-colors duration-300 ease-in"
+                className="p-2 cursor-pointer hover:bg-slate-300/50 dark:hover:bg-slate-700/50 rounded-md transition-colors duration-300 ease-in"
                 onClick={() => removeFileFromFileList(file.id)}
                 title="Delete"
               >

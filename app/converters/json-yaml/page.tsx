@@ -10,6 +10,7 @@ import jsyaml from 'js-yaml';
 import SelectSetting from '@/components/SelectSetting';
 import PasteLoadClearBar from '@/components/PasteLoadClearBar';
 import CopyBar from '@/components/CopyBar';
+import { useTheme } from '@/components/ThemeProvider';
 
 const options = ['2 spaces', '4 spaces'];
 const modeOptions = ['JSON to YAML', 'YAML to JSON'];
@@ -21,6 +22,7 @@ function JsonYamlPage() {
   const [mode, setMode] = useState(modeOptions[0]);
   const editorRef = useRef<Editor>(null);
   const outputEditorRef = useRef<Editor>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (editorRef.current && outputEditorRef.current) {
@@ -112,8 +114,9 @@ function JsonYamlPage() {
             title="Input"
             onValueChange={(value) => editorRef.current.setValue(value)}
           />
-          <div className="bg-white rounded-md border shadow flex-1">
+          <div className="theme-bg theme-border flex-1">
             <Editor
+              theme={theme === 'dark' ? 'vs-dark' : 'light'}
               language={mode === 'JSON to YAML' ? 'json' : 'yaml'}
               onMount={handleInputEditorMount}
               onChange={handleEditorChange}
@@ -125,8 +128,9 @@ function JsonYamlPage() {
             title="Output"
             getNeedCopyText={() => outputEditorRef.current.getValue()}
           />
-          <div className="bg-white rounded-md border shadow flex-1">
+          <div className="theme-bg theme-border flex-1">
             <Editor
+              theme={theme === 'dark' ? 'vs-dark' : 'light'}
               language={mode === 'JSON to YAML' ? 'yaml' : 'json'}
               onMount={handleOutputEditorMount}
             />

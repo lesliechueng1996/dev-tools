@@ -44,7 +44,7 @@ function Base64ImagePage() {
         }}
       />
       <textarea
-        className="w-full flex-1 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+        className="w-full flex-1 theme-bg theme-border resize-none outline-none p-3"
         value={inputText}
         onChange={(e) => {
           setInputText(e.target.value);

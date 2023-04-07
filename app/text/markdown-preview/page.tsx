@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import { micromark } from 'micromark';
 import SelectSetting from '@/components/SelectSetting';
 import CopyBar from '@/components/CopyBar';
+import { useTheme } from '@/components/ThemeProvider';
 
 type Editor = Parameters<OnMount>[0];
 
@@ -17,6 +18,7 @@ function MarkdownPreviewPage() {
   const [theme, setTheme] = useState(options[0]);
   const editorRef = useRef<Editor>(null);
   const [output, setOutput] = useState('');
+  const { theme: globalTheme } = useTheme();
 
   const handleEditorMount = (editor: Editor) => {
     editor.updateOptions({ minimap: { enabled: false } });
@@ -50,6 +52,7 @@ function MarkdownPreviewPage() {
           />
           <div className="flex-1">
             <Editor
+              theme={globalTheme === 'dark' ? 'vs-dark' : 'light'}
               onChange={(value) => {
                 setOutput(value ?? '');
               }}
@@ -59,7 +62,7 @@ function MarkdownPreviewPage() {
         </div>
         <div className="flex-1">
           <CopyBar title="Preview" getNeedCopyText={() => micromark(output)} />
-          <div className={theme === 'dark' ? 'dark' : ''}>
+          <div className={theme === 'dark' ? 'dark' : 'light'}>
             <div className="bg-white h-full rounded-md dark:bg-slate-700">
               <div className="prose dark:prose-invert mx-auto">
                 <ReactMarkdown>{output}</ReactMarkdown>

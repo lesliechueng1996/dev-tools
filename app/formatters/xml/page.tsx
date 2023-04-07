@@ -10,11 +10,13 @@ import SelectSetting from '@/components/SelectSetting';
 import SwitchSetting from '@/components/SwitchSetting';
 import PasteLoadClearBar from '@/components/PasteLoadClearBar';
 import CopyBar from '@/components/CopyBar';
+import { useTheme } from '@/components/ThemeProvider';
 
 const options = ['2 spaces', '4 spaces', '1 tab', 'Minified'];
 
 type Editor = Parameters<OnMount>[0];
 function XmlPage() {
+  const { theme } = useTheme();
   const [indentation, setIndentation] = useState(options[0]);
   const [needNewline, setNeedNewline] = useState(false);
   const editorRef = useRef<Editor>(null);
@@ -147,8 +149,9 @@ function XmlPage() {
             title="Input"
             onValueChange={(value) => editorRef.current.setValue(value)}
           />
-          <div className="bg-white rounded-md border shadow flex-1">
+          <div className="theme-bg theme-border flex-1">
             <Editor
+              theme={theme === 'dark' ? 'vs-dark' : 'light'}
               defaultLanguage="xml"
               onMount={handleInputEditorMount}
               onChange={handleEditorChange}
@@ -160,8 +163,12 @@ function XmlPage() {
             title="Output"
             getNeedCopyText={() => outputEditorRef.current.getValue()}
           />
-          <div className="bg-white rounded-md border shadow flex-1">
-            <Editor defaultLanguage="xml" onMount={handleOutputEditorMount} />
+          <div className="theme-bg theme-border flex-1">
+            <Editor
+              theme={theme === 'dark' ? 'vs-dark' : 'light'}
+              defaultLanguage="xml"
+              onMount={handleOutputEditorMount}
+            />
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import PasteFileEditor from '@/components/PasteFileEditor';
 import SwitchSetting from '@/components/SwitchSetting';
+import { useTheme } from '@/components/ThemeProvider';
 import { CodeBracketSquareIcon } from '@heroicons/react/24/outline';
 import { DiffEditor, OnMount } from '@monaco-editor/react';
 import { useEffect, useRef, useState } from 'react';
@@ -9,6 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 type DiffEditor = Parameters<OnMount>[0];
 
 function TextDiffPage() {
+  const { theme } = useTheme();
   const [inlineMode, setInlineMode] = useState(false);
   const diffEditorRef = useRef<DiffEditor>(null);
 
@@ -57,6 +59,7 @@ function TextDiffPage() {
       <div className="flex-1">
         <h2>Difference</h2>
         <DiffEditor
+          theme={theme === 'dark' ? 'vs-dark' : 'light'}
           onMount={handleDiffEditorMount}
           original={leftSide}
           modified={rightSide}

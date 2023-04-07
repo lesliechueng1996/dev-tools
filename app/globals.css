@@ -6,4 +6,12 @@
   .theme-bg {
     @apply bg-slate-200 dark:bg-slate-900;
   }
+
+  .theme-border {
+    @apply border dark:border-slate-800 rounded-md shadow;
+  }
+
+  .theme-button {
+    @apply theme-bg px-3 py-2 flex items-center gap-2 theme-border;
+  }
 }

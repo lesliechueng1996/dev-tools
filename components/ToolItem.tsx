@@ -33,7 +33,8 @@ function ToolItem({ tool }: { tool: MenuItem }) {
           title="Open in a new window"
           onClick={(e) => {
             e.stopPropagation();
-            window.open(tool.link);
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+            window.open(baseUrl ? baseUrl + tool.link : tool.link, '_blank');
           }}
         />
         {favorites.includes(tool.id) ? (

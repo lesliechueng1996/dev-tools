@@ -29,7 +29,7 @@ export default function RootLayout({
         <ThemeProvider>
           <DialogProvider>
             <FavoriteProvider>
-              <aside className="w-1/4 theme-bg h-screen min-w-min overflow-y-auto">
+              <aside className="w-1/4 max-w-md theme-bg h-screen min-w-min overflow-y-auto">
                 <Menu />
               </aside>
               <div className="flex-1 bg-slate-50 dark:bg-slate-800 h-screen flex flex-col">

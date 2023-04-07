@@ -3,6 +3,7 @@
 import CopyBar from '@/components/CopyBar';
 import PasteLoadClearBar from '@/components/PasteLoadClearBar';
 import SelectSetting from '@/components/SelectSetting';
+import { useTheme } from '@/components/ThemeProvider';
 import {
   Bars3BottomRightIcon,
   CodeBracketIcon,
@@ -59,6 +60,7 @@ const options = ['2 spaces', '4 spaces', '1 tab'];
 type Editor = Parameters<OnMount>[0];
 
 function SqlPage() {
+  const { theme } = useTheme();
   const [sqlType, setSqlType] = useState(sqlOptions[8].key);
   const [indentation, setIndentation] = useState(options[0]);
 
@@ -146,8 +148,9 @@ function SqlPage() {
             title="Input"
             onValueChange={(text) => editorRef.current.setValue(text)}
           />
-          <div className="bg-white rounded-md border shadow flex-1">
+          <div className="theme-bg theme-border flex-1">
             <Editor
+              theme={theme === 'dark' ? 'vs-dark' : 'light'}
               defaultLanguage="sql"
               onMount={handleInputEditorMount}
               onChange={handleEditorChange}
@@ -159,8 +162,12 @@ function SqlPage() {
             title="Output"
             getNeedCopyText={() => outputEditorRef.current.getValue()}
           />
-          <div className="bg-white rounded-md border shadow flex-1">
-            <Editor defaultLanguage="sql" onMount={handleOutputEditorMount} />
+          <div className="theme-bg theme-border flex-1">
+            <Editor
+              theme={theme === 'dark' ? 'vs-dark' : 'light'}
+              defaultLanguage="sql"
+              onMount={handleOutputEditorMount}
+            />
           </div>
         </div>
       </div>

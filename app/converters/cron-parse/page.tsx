@@ -113,7 +113,7 @@ function CronParsePage() {
             options={options}
           />
 
-          <div className="flex items-center bg-white py-5 px-5 rounded-md shadow gap-5 h-20">
+          <div className="flex items-center theme-bg py-5 px-5 theme-border gap-5 h-20">
             <div>
               <LanguageIcon className="w-6 h-6" />
             </div>
@@ -123,9 +123,9 @@ function CronParsePage() {
                 Date time format of upcoming dates
               </span>
             </div>
-            <div className="flex gap-2 items-center border shadow rounded-md px-3">
+            <div className="flex gap-2 items-center theme-border px-3">
               <input
-                className="outline-none py-3 px-2"
+                className="outline-none py-3 px-2 theme-bg"
                 type="text"
                 value={format}
                 onChange={(e) => setFormat(e.target.value)}
@@ -148,7 +148,7 @@ function CronParsePage() {
         <div className="flex justify-between items-center mb-2">
           <h2>Cron expression to parse</h2>
           <button
-            className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
+            className="theme-button"
             title="Paste"
             onClick={readClipboard}
           >
@@ -157,7 +157,7 @@ function CronParsePage() {
           </button>
         </div>
         <input
-          className="w-full outline-none px-3 py-2 border shadow rounded-md"
+          className="w-full outline-none px-3 py-2 theme-bg theme-border"
           type="text"
           value={cron}
           onChange={(e) => setCron(e.target.value)}
@@ -170,7 +170,7 @@ function CronParsePage() {
           getNeedCopyText={() => outputRef.current?.value || ''}
         />
         <textarea
-          className="w-full h-56 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full h-56 theme-bg theme-border resize-none outline-none p-3"
           ref={outputRef}
           readOnly
         ></textarea>

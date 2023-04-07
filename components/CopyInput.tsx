@@ -17,15 +17,11 @@ function CopyInput({ title, value }: Props) {
       <h2>{title}</h2>
       <div className="flex items-center gap-3">
         <input
-          className="flex-1 border shadow rounded-md outline-none px-3 py-2"
+          className="flex-1 theme-bg theme-border outline-none px-3 py-2"
           value={value}
           readOnly
         />
-        <button
-          className="shadow border rounded-md py-2 px-3 bg-white"
-          title="Copy"
-          onClick={writeClipboard}
-        >
+        <button className="theme-button" title="Copy" onClick={writeClipboard}>
           <DocumentDuplicateIcon className="w-6 h-6" />
         </button>
       </div>

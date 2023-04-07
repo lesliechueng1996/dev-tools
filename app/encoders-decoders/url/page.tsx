@@ -59,7 +59,7 @@ function UrlPage() {
         <textarea
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          className="w-full flex-1 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full flex-1 theme-bg theme-border resize-none outline-none p-3"
         ></textarea>
       </div>
 
@@ -69,7 +69,7 @@ function UrlPage() {
           getNeedCopyText={() => outputRef.current?.value || ''}
         />
         <textarea
-          className="w-full flex-1 shadow border border-b-black/40 border-b-2 rounded-md resize-none outline-none p-3"
+          className="w-full flex-1 theme-bg theme-border resize-none outline-none p-3"
           readOnly
           ref={outputRef}
         ></textarea>

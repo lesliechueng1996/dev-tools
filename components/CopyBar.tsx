@@ -18,11 +18,7 @@ function CopyBar({ title, getNeedCopyText }: Props) {
     <div className="flex justify-between items-baseline mb-3">
       <h2>{title}</h2>
       <div>
-        <button
-          className="bg-white rounded-md px-3 py-2 flex items-center gap-2 shadow"
-          title="Copy"
-          onClick={writeClipboard}
-        >
+        <button className="theme-button" title="Copy" onClick={writeClipboard}>
           <DocumentDuplicateIcon className="w-6 h-6" />
           Copy
         </button>
